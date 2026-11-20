@@ -171,6 +171,15 @@ button{font-family:var(--f2);color:inherit;cursor:pointer;border:none;background
 .lbl{display:block;font-size:12px;font-weight:700;color:var(--dim);letter-spacing:.4px;margin:12px 0 6px}
 .err{min-height:18px;font-size:13px;font-weight:600;color:var(--bad);margin-top:6px;text-align:center}
 .who{text-align:center;font-size:12.5px;color:var(--dim);margin-top:12px}.who b{color:#fff}.who button{color:var(--gold);font-weight:700;font-size:12.5px;text-decoration:underline;text-underline-offset:2px;padding:2px}
+/* daily & leaderboard */
+.daily{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 6px}
+.dt{padding:10px 4px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);text-align:center;opacity:.7}
+.dt small{display:block;font-size:11px;color:var(--dim);font-weight:700}.dt b{font-size:13px;font-weight:800;color:var(--gold)}.dt i{display:block;font-style:normal;font-size:10px;color:#ffb070;font-weight:700}
+.dt.got{opacity:.45}.dt.got b{color:var(--ok)}.dt.now{opacity:1;border-color:var(--gold);background:rgba(246,198,91,.12);box-shadow:0 0 18px rgba(246,198,91,.25)}.dt.big7{grid-column:span 1}
+.lbl2,.lbr{display:grid;grid-template-columns:34px 1fr 96px 90px;gap:6px;align-items:center;padding:9px 10px;font-size:13.5px}
+.lbl2{font-size:11px;color:var(--dim);font-weight:700;letter-spacing:.3px}
+.lbr{border-radius:11px;background:rgba(255,255,255,.05);margin-bottom:6px;font-weight:700}.lbr.me{background:rgba(246,198,91,.14);border:1px solid rgba(246,198,91,.45)}
+.lbr .rk{font-size:16px;text-align:center}.lbr .pn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lbr span:nth-child(3),.lbl2 span:nth-child(3){text-align:center}.lbr span:last-child,.lbl2 span:last-child{text-align:right;color:var(--gold)}
 /* settings */
 .set{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 2px;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;font-weight:600}
 .set span small{display:block;font-weight:500;color:var(--dim);font-size:11.5px}
@@ -202,6 +211,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:none;border-ra
  #quest{width:min(200px,46vw);padding:9px 11px} #qd{font-size:12.5px} #qr{font-size:10.5px}
  #menuBtn{top:auto;bottom:auto;top:calc(12px + var(--st));right:calc(min(200px,46vw) + 24px + var(--sr));width:38px;height:38px}
  #boosts{top:calc(118px + var(--st));max-width:60vw} .bc{font-size:11px;padding:3px 7px} .bc i{font-size:9.5px}
+ #eraT{max-width:calc(100vw - min(200px,46vw) - 80px);overflow:hidden;text-overflow:ellipsis}
  #shopBtn{top:calc(124px + var(--st));right:calc(14px + var(--sr));height:38px;padding:0 12px}
  #boosts{max-width:52vw}
  #toasts{top:calc(176px + var(--st))}
@@ -862,6 +872,7 @@ const OUTFITS = [
 ];
 function buildPerson(gl, era) {
   if (THEME === 1) return buildAstronaut(gl, era);
+  if (THEME === 2) return buildCyberPerson(gl, era);
   const o = OUTFITS[era], P = {};
   let b = nb(5, 0); b.c(o.top).tbox(.34, .36, .22, .42, .25); b.c(o.top, .85).push().t(0, .34, 0).tbox(.42, .22, .25, .36, .22).pop();
   b.c(o.acc).push().t(0, .02, 0).box(.37, .07, .24).pop(); b.c(o.skin).push().t(0, .54, 0).cyl(.06, .06, .1, 6).pop();
@@ -897,6 +908,7 @@ function buildPerson(gl, era) {
 // ---------- first person ----------
 function buildFP(gl, era) {
   if (THEME === 1) return buildSpaceArm(gl, era);
+  if (THEME === 2) return buildCyberArm(gl, era);
   const o = OUTFITS[era], F = {};
   let b = nb(21, 0); b.jit = .03;
   const sleeve = [0x8a6040, 0xe9e0cc, 0x48648c, 0x3a3634, 0xf28c28][era];
@@ -1515,6 +1527,7 @@ function e4_monument() {
 // ---------- treasury / node / pad ----------
 function buildTreasury(era) {
   if (THEME === 1) return buildSpaceTreasury(era);
+  if (THEME === 2) return buildCyberTreasury(era);
   const B = mkB(600 + era, 3, 2.4), b = B.b;
   const base = [PAL.stone, PAL.marble, PAL.stoneL, PAL.brick, 0xdfe3e6][era];
   b.c(base).cyl(2.2, 2.3, .35, 16); b.c(base, .9).push().t(0, .35, 0).cyl(1.8, 1.9, .2, 16).pop();
@@ -1532,6 +1545,7 @@ function buildTreasury(era) {
 const NODE_COL = [[PAL.stoneL, 0x2c3440, 0], [0x9a8a7a, 0x3aa08a, .2], [0x7a7570, 0x8a8f96, .1], [0x3a3634, 0x111114, 0], [0xcfd6dc, 0x2fd6ff, 2.2]];
 function buildNode(era) {
   if (THEME === 1) return buildSpaceNode(era);
+  if (THEME === 2) return buildCyberNode(era);
   const B = mkB(700 + era, 2.2, 1.5), b = B.b, c = NODE_COL[era];
   b.c(c[0]).push().t(0, 0, 0).s(1.3, .85, 1.1).rock(1.0, 1, .3).pop();
   b.c(c[0], .85).push().t(.7, 0, .5).rock(.45, 1, .3).pop().push().t(-.8, 0, .2).rock(.38, 1, .3).pop();
@@ -1548,6 +1562,7 @@ function buildPad(gl) {
 function buildArrow(gl) { const b = nb(801, 0); b.c(0xffffff).E(1).push().rx(PI).t(0, -.5, 0).cone(.32, .5, 4).pop(); b.push().t(0, .5, 0).boxC(.18, .5, .18).pop(); return b.build(gl); }
 function buildRelic(gl, era) {
   if (THEME === 1) return buildSpaceRelic(gl, era);
+  if (THEME === 2) return buildCyberRelic(gl, era);
   const b = nb(810 + era, 0); b.SP(1);
   if (era === 0) { b.c(0xe0b040).E(.6).push().s(1, 1.4, .7).sph(.2, 1).pop().push().t(0, .3, 0).sph(.11, 1).pop(); }
   if (era === 1) { b.c(PAL.gold).E(.6).push().s(1, 1.2, .4).sph(.22, 1).pop(); b.c(0x2f5d9e).E(.8).push().t(-.07, .05, .08).sph(.035, 0).pop().push().t(.07, .05, .08).sph(.035, 0).pop(); }
@@ -1592,6 +1607,7 @@ const RELIC_SPOTS = [
 function noise2(x, z) { return Math.sin(x * .045 + 1.3) * Math.cos(z * .05 - .7) * .55 + Math.sin(x * .11 + z * .07) * .25 + Math.sin(z * .13 - x * .04 + 2) * .2 + Math.sin(x * .29 - z * .23) * .08; }
 function terrainH(x, z) {
   if (THEME === 1) return terrainSpace(x, z);
+  if (THEME === 2) return terrainCyber(x, z);
   const r = Math.hypot(x, z); if (r < 34) return 0;
   const n = noise2(x, z), f = smooth((r - 34) / 22);
   let h = f * (1.2 + (n + .6) * 3.2) + smooth((r - 60) / 40) * (6 + n * 6);
@@ -1632,7 +1648,7 @@ function buildTerrain(gl, era) {
     let c = v3.lerp(g1, g2, clamp(.5 + n * .9, 0, 1));
     if (r > 40) c = v3.lerp(c, rk, smooth((h - 9) / 14) * .85);
     if (!THEME && era !== 1 && era !== 3 && r > 120) c = v3.lerp(c, snow, smooth((h - 40) / 12));
-    if (THEME && era === 3) c = v3.lerp(c, lin(0x9a5a3a), clamp(Math.abs(Math.sin(p[0] * .07 + p[2] * .05) * Math.sin(p[2] * .09)) * 3 - 2.4, 0, .7));
+    if (THEME === 1 && era === 3) c = v3.lerp(c, lin(0x9a5a3a), clamp(Math.abs(Math.sin(p[0] * .07 + p[2] * .05) * Math.sin(p[2] * .09)) * 3 - 2.4, 0, .7));
     if (!THEME && era === 1 && r > 60) c = v3.lerp(c, lin(0xc9a870), smooth((r - 60) / 50) * .6);
     if (r < 34.5 && r > 30) c = v3.lerp(c, dirt, .15);
     return c;
@@ -1687,14 +1703,15 @@ function pathStrip(b, a, r0, r1, w, col, era) {
     if (!THEME && (era === 1 || era === 2)) { b.c(i % 2 ? col : col, .92 + (i % 3) * .05).push().t(0, .025, (z0 + z1) / 2).box(w - .08, .03, Math.abs(z1 - z0) - .06).pop(); }
     else b.c(col).quad([-w / 2, .025, z0], [w / 2, .025, z0], [w / 2, .025, z1], [-w / 2, .025, z1]);
   }
-  if (THEME) { b.c(SP[era].acc).E(2); [-1, 1].forEach(s => b.push().t(s * (w / 2 - .06), .03, -(r0 + r1) / 2).box(.06, .015, L).pop()); b.E(0); }
+  if (THEME) { b.c(THEME === 2 ? CP[era].n1 : SP[era].acc).E(2); [-1, 1].forEach(s => b.push().t(s * (w / 2 - .06), .03, -(r0 + r1) / 2).box(.06, .015, L).pop()); b.E(0); }
   else if (era === 4) { b.c(0xf0f0f0).E(.1); for (let i = 0; i < n; i += 2) b.push().t(0, .03, -(r0 + L * (i + .5) / n)).box(.1, .01, .5).pop(); b.E(0); }
   else if (era === 3) { b.c(0x4a3a30); [-1, 1].forEach(s => b.push().t(s * w * .32, .03, -(r0 + r1) / 2).box(.06, .05, L).pop()); }
   b.pop();
 }
 function buildGroundDecor(era) {
   const b = nb(1000 + era, 0); b.jit = .08;
-  const pc = THEME ? [0x3e3a36, 0x4e3e2e, 0x5e3e30, 0x6e7a8a, 0x3e3850][era] : [0x6e604e, 0xc4b494, 0x8f8a80, 0x7a4a3c, 0x55575c][era], plaza = THEME ? [0x5a544e, 0x6a5640, 0x7a5a4a, 0x9aa6b6, 0x5a5468][era] : [0x5f5446, 0xbfb196, 0x9a958a, 0x6e3e32, 0xc9ccd0][era];
+  const pc = THEME === 2 ? [0x1c1a20, 0x221c18, 0x1c2018, 0x1a1e26, 0x201c28][era] : THEME ? [0x3e3a36, 0x4e3e2e, 0x5e3e30, 0x6e7a8a, 0x3e3850][era] : [0x6e604e, 0xc4b494, 0x8f8a80, 0x7a4a3c, 0x55575c][era], plaza = THEME === 2 ? [0x2a2830, 0x30282a, 0x2a2e26, 0x2a303a, 0x2e2a38][era] : THEME ? [0x5a544e, 0x6a5640, 0x7a5a4a, 0x9aa6b6, 0x5a5468][era] : [0x5f5446, 0xbfb196, 0x9a958a, 0x6e3e32, 0xc9ccd0][era];
+  if (THEME === 2) b.SP(.9);
   // plaza
   const R = 7.2, seg = 40;
   for (let ri = 0; ri < 6; ri++) for (let s = 0; s < seg; s++) {
@@ -1705,6 +1722,7 @@ function buildGroundDecor(era) {
     b.quad(p(r0, a0), p(r1, a0), p(r1, a1), p(r0, a1));
   }
   b.c(plaza, .75); for (let s = 0; s < seg; s++) { const a = s / seg * TAU; b.push().t(Math.cos(a) * R, 0, Math.sin(a) * R).ry(-a).box(.35, .08, 1.18).pop(); }
+  b.SP(0);
   for (let i = 0; i < 8; i++) pathStrip(b, SLOT_ANG[i], R, 11.3, 1.9, pc, era);
   for (let i = 0; i < 5; i++) pathStrip(b, MON_ANG[i], R, 20.6, 1.9, pc, era);
   pathStrip(b, PI, R, 33, 2.2, pc, era);
@@ -1744,6 +1762,7 @@ function prop(b, era, kind, x, z, r) {
 }
 function buildEraDecor(gl, era) {
   if (THEME === 1) return buildSpaceDecor(gl, era);
+  if (THEME === 2) return buildCyberDecor(gl, era);
   const b = buildGroundDecor(era), r = RNG(500 + era), lights = [];
   // boundary
   const segN = 64;
@@ -2100,6 +2119,252 @@ function buildPick(gl, k) {
   return b.build(gl);
 }
 
+// ===================== WORLD 3 : NÉO-TOKYO =====================
+const DISTRICTS = [
+  {
+    name: 'Bas-Fonds', roman: 'I', sub: 'Là où la pluie ne s\'arrête jamais', accent: '#ff3fa4', node: 'Noyau de données', grav: 22,
+    b: [['Stand de ramen', 'Un bol fumant sous la pluie.'], ['Atelier cyber', 'Réparations de bras mécaniques.'], ['Salle d\'arcade', 'Des jeux, des lumières, des pièces.'], ['Kiosque à implants', 'Améliore-toi, littéralement.'], ['Club néon', 'La fête ne finit jamais.'], ['Relais pirate', 'Le réseau des bas-fonds.'], ['Capsules-hôtel', 'Dormir dans une boîte.'], ['Tour holographique', 'Elle illumine tout le quartier.']],
+    mon: 'Statue holographique', monDesc: 'Une géante de lumière veille sur la ville.', relics: ['Puce gravée', 'Katana néon', 'Masque oni']
+  },
+  {
+    name: 'Marché de nuit', roman: 'II', sub: 'Lanternes, épices et néons', accent: '#ff7a2a', node: 'Coffre de données', grav: 22,
+    b: [['Échoppe de brochettes', 'L\'odeur attire toute la rue.'], ['Bar à nouilles', 'Ouvert 24 heures sur 24.'], ['Marchand d\'épices', 'Des saveurs de synthèse.'], ['Salon de thé robot', 'Un service impeccable.'], ['Boutique de néons', 'Des enseignes sur mesure.'], ['Tripot clandestin', 'La chance sourit aux audacieux.'], ['Temple numérique', 'Des prières en code binaire.'], ['Pagode lumineuse', 'Le cœur du marché.']],
+    mon: 'Grande pagode néon', monDesc: 'Cinq étages de lumière au-dessus du marché.', relics: ['Lanterne éternelle', 'Dé truqué', 'Bol en jade']
+  },
+  {
+    name: 'Zone des drones', roman: 'III', sub: 'Les machines travaillent pour toi', accent: '#b8ff3a', node: 'Batterie géante', grav: 22,
+    b: [['Hangar à drones', 'Des livraisons dans toute la ville.'], ['Usine d\'assemblage', 'Des robots qui fabriquent des robots.'], ['Station de recharge', 'L\'énergie de tout un quartier.'], ['Recyclerie', 'Rien ne se perd.'], ['Entrepôt automatisé', 'Des millions de colis par jour.'], ['Fonderie plasma', 'Le métal le plus pur.'], ['Tour de contrôle', 'Elle guide chaque drone.'], ['Centrale à fusion', 'Une étoile en bouteille.']],
+    mon: 'Méca titan', monDesc: 'Un géant d\'acier garde la zone.', relics: ['Drone prototype', 'Batterie plasma', 'Clé à molette dorée']
+  },
+  {
+    name: 'Quartier corporatif', roman: 'IV', sub: 'Verre, acier et milliards', accent: '#3fc8ff', node: 'Serveur central', grav: 22,
+    b: [['Banque de données', 'L\'information vaut de l\'or.'], ['Bureaux holo', 'Des réunions en hologramme.'], ['Clinique cybernétique', 'Le corps augmenté.'], ['Centre de recherche', 'L\'avenir s\'invente ici.'], ['Hôtel de luxe', 'Les clients les plus riches de la ville.'], ['Studio de diffusion', 'Toute la ville te regarde.'], ['Siège de la corpo', 'Ton empire a un logo.'], ['Gratte-ciel Zénith', 'Il perce les nuages.']],
+    mon: 'Arche corporative', monDesc: 'Deux tours reliées par un pont dans le ciel.', relics: ['Badge du PDG', 'Disque crypté', 'Stylo en or']
+  },
+  {
+    name: 'Sommet', roman: 'V', sub: 'Au-dessus des nuages de la ville', accent: '#c88aff', node: 'Cœur quantique', grav: 22,
+    b: [['Jardin suspendu', 'De la nature au-dessus du béton.'], ['Laboratoire IA', 'Une intelligence s\'éveille.'], ['Observatoire', 'Les étoiles, enfin visibles.'], ['Cœur quantique', 'Un calcul infini.'], ['Port aérien', 'Les voitures volantes y atterrissent.'], ['Palais de verre', 'Le sommet du luxe.'], ['Antenne orbitale', 'Un lien direct avec l\'espace.'], ['Spire céleste', 'Le point le plus haut de Néo-Tokyo.']],
+    mon: 'Ascenseur orbital', monDesc: 'Un câble de lumière vers les étoiles.', relics: ['Graine de lune', 'Cœur d\'IA', 'Carte orbitale']
+  },
+];
+const QUESTS_CYBER = [
+  [{ t: 'hits', n: 10, d: 'Pirate le noyau de données 10 fois' }, { t: 'buy', n: 1, d: 'Ouvre le Stand de ramen' }, { t: 'pick', n: 1, d: 'Achète une Pioche en pierre (Boutique)' }, { t: 'perfect', n: 8, d: 'Réussis 8 coups parfaits' }, { t: 'level', n: 10, d: 'Atteins le palier 10' }, { t: 'aura', n: 1, d: 'Obtiens l\'Aura de braise' }, { t: 'buy', n: 8, d: 'Possède les 8 bâtiments' }, { t: 'relic', n: 1, d: 'Trouve une relique des Bas-Fonds' }],
+  [{ t: 'buy', n: 2, d: 'Possède 2 échoppes du marché' }, { t: 'pick', n: 3, d: 'Achète la Pioche en fer' }, { t: 'combo', n: 6, d: 'Enchaîne 6 coups parfaits' }, { t: 'level', n: 15, d: 'Améliore un bâtiment au niveau 15' }, { t: 'aura', n: 2, d: 'Obtiens l\'Aura des marées' }, { t: 'buy', n: 8, d: 'Possède les 8 bâtiments' }, { t: 'relic', n: 1, d: 'Trouve une relique du marché' }],
+  [{ t: 'buy', n: 3, d: 'Possède 3 bâtiments de la zone' }, { t: 'pick', n: 5, d: 'Achète la Pioche en or' }, { t: 'frenzy', n: 2, d: 'Déclenche 2 frénésies' }, { t: 'level', n: 20, d: 'Atteins le palier 20' }, { t: 'aura', n: 3, d: 'Obtiens l\'Aura de tempête' }, { t: 'buy', n: 8, d: 'Possède les 8 bâtiments' }, { t: 'relic', n: 1, d: 'Trouve une relique de la zone' }],
+  [{ t: 'buy', n: 3, d: 'Possède 3 bâtiments corporatifs' }, { t: 'pick', n: 7, d: 'Achète la Pioche en émeraude' }, { t: 'combo', n: 8, d: 'Enchaîne 8 coups parfaits' }, { t: 'level', n: 25, d: 'Améliore un bâtiment au niveau 25' }, { t: 'aura', n: 4, d: 'Obtiens l\'Aura solaire' }, { t: 'buy', n: 8, d: 'Possède les 8 bâtiments' }, { t: 'relic', n: 1, d: 'Trouve une relique corporative' }],
+  [{ t: 'buy', n: 3, d: 'Possède 3 bâtiments du Sommet' }, { t: 'pick', n: 9, d: 'Achète la Pioche d\'obsidienne' }, { t: 'frenzy', n: 3, d: 'Déclenche 3 frénésies' }, { t: 'aura', n: 5, d: 'Obtiens l\'Aura cosmique' }, { t: 'level', n: 30, d: 'Atteins le palier 30' }, { t: 'pick', n: 10, d: 'Achète la Pioche stellaire' }, { t: 'buy', n: 8, d: 'Possède les 8 bâtiments' }, { t: 'relic', n: 1, d: 'Trouve une relique du Sommet' }],
+];
+const ENVS_CYBER = [
+  { name: 'Nuit pluvieuse', el: 34, az: -40, sun: [0x8a9cff, .9], zen: [0x06040e, 1], fog: [0x3a1a46, 1], sky: [0x6a4a9a, .5], gnd: [0x1a1020, .4], cloudC: [0x5a3a6a, .8], cloud: .7, fogS: 18, fogD: .011, exp: 1.0, grade: [1.02, .96, 1.08], sat: 1.15, bloom: .55, bth: 1.5, wind: .4, grass: null, ground: 0x24222a, grass2: 0x2c2a34, rockC: 0x2a2830, stars: 0, sunSz: .6, rain: 1 },
+  { name: 'Nuit dorée', el: 30, az: 50, sun: [0xffb08a, .8], zen: [0x0a0508, 1], fog: [0x4a2418, 1], sky: [0x9a5a3a, .5], gnd: [0x24140e, .4], cloudC: [0x6a3a2a, .8], cloud: .6, fogS: 18, fogD: .01, exp: 1.0, grade: [1.06, .98, .94], sat: 1.12, bloom: .55, bth: 1.5, wind: .3, grass: null, ground: 0x2a2420, grass2: 0x342c26, rockC: 0x2e2622, stars: 0, sunSz: .6, rain: .4 },
+  { name: 'Smog acide', el: 32, az: -10, sun: [0xc8ffb0, .8], zen: [0x050a06, 1], fog: [0x26381c, 1], sky: [0x6a8a4a, .5], gnd: [0x141c10, .4], cloudC: [0x3a4a2a, .8], cloud: .8, fogS: 16, fogD: .012, exp: 1.0, grade: [.98, 1.04, .96], sat: 1.1, bloom: .55, bth: 1.5, wind: .5, grass: null, ground: 0x22261e, grass2: 0x2a2e24, rockC: 0x262a22, stars: 0, sunSz: .6, rain: .7 },
+  { name: 'Nuit bleue', el: 40, az: 20, sun: [0xa8d4ff, 1.0], zen: [0x02060e, 1], fog: [0x14304a, 1], sky: [0x4a7aaa, .5], gnd: [0x0c1622, .4], cloudC: [0x2a4a6a, .8], cloud: .55, fogS: 22, fogD: .009, exp: 1.0, grade: [.96, 1, 1.08], sat: 1.12, bloom: .55, bth: 1.5, wind: .3, grass: null, ground: 0x1e232a, grass2: 0x262c34, rockC: 0x22262e, stars: .2, sunSz: .6, rain: .3 },
+  { name: 'Au-dessus des nuages', el: 25, az: 30, sun: [0xe0c8ff, 1.3], zen: [0x050318, 1], fog: [0x3a2a6a, 1], sky: [0x8a7ad0, .5], gnd: [0x1a1430, .4], cloudC: [0x6a5aa0, .9], cloud: .3, fogS: 30, fogD: .007, exp: 1.0, grade: [1.02, .98, 1.08], sat: 1.15, bloom: .55, bth: 1.5, wind: .2, grass: null, ground: 0x26222e, grass2: 0x2e2a38, rockC: 0x2a2632, stars: 1.2, sunSz: .7, rain: 0 },
+];
+const CP = [
+  { wall: 0x2a2630, dark: 0x16141a, n1: 0xff3fa4, n2: 0x3ff0ff, glass: 0x2a4a6a, pad: 0x1e1c22 },
+  { wall: 0x3a2a24, dark: 0x1a1210, n1: 0xff6a2a, n2: 0xffd23a, glass: 0x5a3a2a, pad: 0x241c18 },
+  { wall: 0x2e322a, dark: 0x16180f, n1: 0xb8ff3a, n2: 0xffe23a, glass: 0x3a4a2a, pad: 0x1e2018 },
+  { wall: 0x3a4250, dark: 0x141a22, n1: 0x3fc8ff, n2: 0xffffff, glass: 0x3a6a9a, pad: 0x262c36 },
+  { wall: 0x3a3448, dark: 0x16121e, n1: 0xc88aff, n2: 0xffd27a, glass: 0x5a4a8a, pad: 0x242030 },
+];
+function terrainCyber(x, z) { const r = Math.hypot(x, z); return r < 34 ? 0 : smooth((r - 34) / 30) * -.4; }
+function neonBox(b, w, h, d, col, e) { b.c(col).E((e || 2.6) * .42); const t = .05;[[-w / 2, -d / 2], [w / 2, -d / 2], [-w / 2, d / 2], [w / 2, d / 2]].forEach(p => b.push().t(p[0], 0, p[1]).box(t, h, t).pop()); [0, h].forEach(y => { b.push().t(0, y, d / 2).box(w, t, t).pop(); b.push().t(0, y, -d / 2).box(w, t, t).pop(); b.push().t(w / 2, y, 0).box(t, t, d).pop(); b.push().t(-w / 2, y, 0).box(t, t, d).pop(); }); b.E(0); }
+function sign(b, x, y, z, w, h, c1, c2, vert) { b.c(0x0a0a0e).push().t(x, y, z).boxC(w + .1, h + .1, .12).pop(); b.c(c1).E(1.18).push().t(x, y, z + .07).boxC(w, h, .02).pop(); b.c(c2).E(1.34); const n = vert ? Math.floor(h / .5) : Math.floor(w / .5); for (let i = 0; i < n; i++) { const o = (i + .5) / n - .5; b.push().t(x + (vert ? 0 : o * w), y + (vert ? o * h : 0), z + .09).boxC(vert ? w * .55 : w / n * .6, vert ? h / n * .55 : h * .55, .01).pop(); } b.E(0); }
+function cB(kind, era) {
+  const P = CP[era], B = mkB(3000 + era * 10 + kind, 4, 3), b = B.b;
+  if (kind === 0) {
+    b.c(P.wall).box(3.4, 2.6, 2.4); b.c(P.dark).push().t(0, 2.6, 0).box(3.6, .2, 2.6).pop();
+    b.c(P.n1).E(0.59); for (let i = 0; i < 6; i++) b.c(i % 2 ? P.n1 : 0xf0f0f0).push().t(-1.45 + i * .58, 2.05, 1.6).rx(-.35).box(.58, .05, 1.2).pop(); b.E(0);
+    b.c(0x0a0a0e).push().t(0, 0, 1.21).box(2.6, 1.8, .02).pop(); b.c(0xffd9a0).E(0.59).push().t(0, .9, 1.22).box(2.4, .7, .02).pop().E(0);
+    b.c(P.dark).push().t(0, 0, 1.9).box(3, .95, .6).pop(); b.c(0x6a4a3a).push().t(0, .95, 1.9).box(3.1, .05, .7).pop();
+    sign(b, 0, 3.4, .4, 2.6, .8, P.n1, P.n2); for (let i = 0; i < 3; i++) b.c(0xd03030).E(0.84).push().t(-1 + i, 2.3, 2.2).sph(.16, 0, 1.3).pop().E(0);
+    B.fx.push({ t: 'steam', p: [0, 1.1, 1.9], k: .7 }); B.h = 3.9; B.lights.push({ p: [0, 1.6, 2.4], c: P.n1, i: 2.4, r: 7 });
+  }
+  if (kind === 1) {
+    b.c(P.wall).box(3.6, 5, 3); b.c(P.dark).push().t(0, 2.5, 0).box(3.7, .15, 3.1).pop();
+    b.c(0x3a3a40).SP(.6).push().t(0, 0, 1.51).box(2.4, 2.1, .03).pop().SP(0); b.c(0x1a1a1e); for (let i = 0; i < 7; i++) b.push().t(0, .2 + i * .28, 1.53).box(2.3, .04, .02).pop();
+    b.c(0xffd9a0).E(0.42); [-1, .9].forEach(x => b.push().t(x, 3.2, 1.51).box(.9, .8, .02).pop()); b.E(0);
+    sign(b, 1.95, 2.8, .4, .5, 3.4, P.n2, P.n1, 1);
+    b.c(0x8a8a90); [[-1.2, 4.2], [.6, 3.9]].forEach(p => b.push().t(p[0], p[1], 1.6).box(.7, .5, .3).pop()); b.c(0x5a5a60); b.beam([-1.8, 5, -1], [-1.8, .2, -1], .12); b.beam([-1.8, 1, -1], [-1.8, 1, 1.4], .1);
+    B.h = 5.3; B.lights.push({ p: [0, 2.3, 2.2], c: P.n2, i: 1.8, r: 6 });
+  }
+  if (kind === 2) {
+    b.c(P.wall).box(4, 3.6, 3); b.c(P.dark).push().t(0, 3.6, 0).box(4.1, .2, 3.1).pop();
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 5; c++) { b.c([P.n1, P.n2, 0xffe23a, 0x7aff7a][(r + c) % 4]).E(0.92).push().t(-1.6 + c * .8, .6 + r * .95, 1.51).box(.62, .7, .02).pop(); } b.E(0);
+    b.c(0x0a0a0e).push().t(0, 0, 1.52).box(1.2, .5, .02).pop();
+    b.c(P.dark).push().t(1.3, 3.8, -.6).cyl(.05, .05, 2.4, 5).pop(); b.c(0xff3030).E(1.68).push().t(1.3, 6.25, -.6).sph(.09, 0).pop().E(0);
+    sign(b, -.6, 4.4, .4, 2.4, .7, P.n2, P.n1);
+    B.h = 4.8; B.lights.push({ p: [0, 1.8, 2.6], c: P.n2, i: 2.4, r: 7 });
+  }
+  if (kind === 3) {
+    hexPad(b, 2, P.pad, .2); b.c(P.wall).SP(.6).push().t(0, .2, 0).cyl(1.3, 1.4, 2.6, 12).pop().SP(0); b.c(P.dark).push().t(0, 2.8, 0).cyl(1.6, 1.4, .3, 12).pop();
+    b.c(P.n1).E(1.05).push().t(0, .9, 0).cyl(1.33, 1.33, .1, 12, false).pop().push().t(0, 2.0, 0).cyl(1.33, 1.33, .1, 12, false).pop().E(0);
+    b.c(0x0a0a0e).push().t(0, .2, 1.25).box(.9, 1.7, .2).pop(); b.c(P.n2).E(0.84).push().t(0, 3.1, 0).cyl(.12, .12, 1.6, 8).pop().E(0);
+    addPart(B, [0, 3.9, 0], 'y', 1.2, m => { m.c(P.n2).E(1.01); m.torus(.9, .03, 26, 3); m.push().rx(.6).torus(.7, .025, 22, 3).pop(); m.push().rz(.9).torus(.55, .02, 20, 3).pop(); m.c(P.n1).E(1.26).sph(.22, 1); m.E(0); });
+    B.h = 4.9; B.fx.push({ t: 'sparkle', p: [0, 3.9, 0], k: .4 }); B.lights.push({ p: [0, 2.5, 1.6], c: P.n1, i: 2, r: 6 });
+  }
+  if (kind === 4) {
+    b.c(P.dark).box(5, 3.4, 3.2); neonBox(b.push().t(0, 0, 0), 5.02, 3.42, 3.22, P.n1, 2.6); b.pop();
+    b.c(0x0a0a0e).push().t(0, 0, 1.62).box(1.6, 2.2, .02).pop(); b.c(P.n2).E(1.26).push().t(0, 2.25, 1.63).box(1.8, .08, .02).pop().E(0);
+    sign(b, 0, 2.8, 1.62, 3.2, .7, P.n1, 0xffffff);
+    for (let i = 0; i < 3; i++) addPart(B, [-1.6 + i * 1.6, 3.45, 0], 'y', 1 + i * .3, m => { m.c([P.n1, P.n2, 0xffe23a][i]).E(1.26).push().rz(.35).box(.1, 3, .1).pop().E(0); });
+    b.c(0x6a6a70).push().t(-2, 0, 2.2).box(.08, .9, .08).pop().push().t(2, 0, 2.2).box(.08, .9, .08).pop(); b.c(0xd02040).push().t(0, .8, 2.2).box(4, .06, .06).pop();
+    B.h = 3.8; B.lights.push({ p: [0, 1.4, 2.6], c: P.n1, i: 3, r: 8 });
+  }
+  if (kind === 5) {
+    b.c(P.wall).box(2.4, 1.8, 2.4); b.c(P.dark).SP(.4);
+    for (let i = 0; i < 4; i++) { const a = i / 4 * TAU + .78; b.beam([Math.cos(a) * 1.1, 1.8, Math.sin(a) * 1.1], [0, 9, 0], .1); } for (let y = 3; y < 9; y += 1.5) { const s = (1 - (y - 1.8) / 7.2) * 1.1; b.push().t(0, y, 0).ry(.78).boxC(s * 1.5, .06, s * 1.5).pop(); } b.SP(0);
+    b.c(0xff3030).E(1.68); [3, 6, 9].forEach(y => b.push().t(0, y, 0).sph(.1, 0).pop()); b.E(0);
+    addPart(B, [0, 6.5, 0], 'y', .8, m => { m.push().t(.6, 0, 0).rz(-HP).rx(.2); m.c(0xd8d8dc).SP(.7).lathe([[0, 0], [.4, .1], [.8, .35]], 12).SP(0); m.c(P.n2).E(1.26).push().t(0, .6, 0).sph(.07, 0).pop().E(0); m.pop(); });
+    sign(b, 0, .9, 1.22, 1.8, .5, P.n2, P.n1);
+    B.h = 9.3; B.r = 2; B.lights.push({ p: [0, 1.6, 1.8], c: P.n2, i: 1.6, r: 6 });
+  }
+  if (kind === 6) {
+    const mods = [[-1, 0, 0], [1, 0, 0], [-1, 1.4, 0], [1, 1.4, .2], [0, 2.8, 0], [-1.2, 4.2, -.2], [.9, 4.2, 0]];
+    mods.forEach((p, i) => { b.c(i % 2 ? P.wall : 0x4a4652).push().t(p[0], p[1], p[2]).box(1.9, 1.35, 2.6).pop(); b.c(i % 3 ? 0xffd9a0 : P.n2).E(i % 3 ? 1.1 : 2.4).push().t(p[0], p[1] + .68, p[2] + 1.31).rx(HP).cyl(.4, .4, .02, 12).pop().E(0); });
+    b.c(0x6a6a70); b.beam([2.05, 0, 1.3], [2.05, 5.6, 1.3], .06); for (let y = .4; y < 5.6; y += .4) b.push().t(2.05, y, 1.3).box(.04, .03, .4).pop();
+    sign(b, -2.0, 3, .6, .4, 2.6, P.n1, P.n2, 1);
+    B.h = 5.6; B.lights.push({ p: [0, 2, 2.4], c: P.n2, i: 1.8, r: 6 });
+  }
+  if (kind === 7) {
+    b.c(P.dark).box(4, .5, 4);
+    b.push().t(0, .5, 0); b.c(P.wall).SP(.5).box(3.2, 14, 3.2).SP(0);
+    for (let f = 0; f < 15; f++) { const y = .6 + f * .9; [1, -1].forEach(s => { b.c(f % 4 === 0 ? P.n2 : 0x0e1420).E(f % 4 === 0 ? 1.6 : 0).SP(f % 4 === 0 ? 0 : 1).push().t(0, y, s * 1.61).box(2.8, .35, .02).pop(); }); b.E(0).SP(0); if ((f * 7) % 3) { b.c(0xffd9a0).E(0.25).push().t((f % 3 - 1) * .8, y + .05, 1.62).box(.5, .25, .01).pop().E(0); } }
+    b.c(0x0a0a0e).push().t(1.68, 3.5, 0).box(.1, 8.2, 1.4).pop(); b.c(P.n1).E(1.18).push().t(1.74, 3.6, 0).box(.02, 8, 1.2).pop().E(0);
+    b.c(P.n2).E(1.34); for (let i = 0; i < 6; i++) b.push().t(1.76, 4.2 + i * 1.2, 0).boxC(.02, .6, .8).pop(); b.E(0);
+    b.c(P.dark).push().t(0, 14, 0).box(3.4, .3, 3.4).pop(); b.c(0xff3030).E(1.68); [[-1.5, -1.5], [1.5, -1.5], [-1.5, 1.5], [1.5, 1.5]].forEach(p => b.push().t(p[0], 14.35, p[1]).sph(.08, 0).pop()); b.E(0);
+    b.pop();
+    addPart(B, [0, 15.8, 0], 'y', .7, m => { m.c(P.n1).E(1.09); m.torus(1, .04, 28, 3); m.push().t(0, .3, 0).boxC(.15, 1.2, .15).pop(); m.c(P.n2).E(1.26).push().t(0, 1.1, 0).sph(.3, 1).pop(); m.E(0); });
+    B.h = 17; B.r = 2.4; B.lights.push({ p: [1.8, 3, 0], c: P.n1, i: 2.6, r: 8 });
+  }
+  if (era === 1 && kind !== 7) { b.c(0x1a1a1a); b.beam([-1.8, 3.2, 2], [1.8, 3.2, 2], .02); b.c(0xff4a2a).E(1.01); for (let i = 0; i < 5; i++) b.push().t(-1.6 + i * .8, 2.95, 2).sph(.16, 0, 1.3).pop(); b.E(0); }
+  if (era === 2 && kind % 2 === 0) addPart(B, [1.2, B.h + 1.2, 1.2], 'y', 0, m => { m.c(0x2a2a30).boxC(.5, .12, .5); m.c(P.n1).E(1.26).push().t(0, -.08, 0).boxC(.12, .04, .12).pop().E(0); [[-.3, -.3], [.3, -.3], [-.3, .3], [.3, .3]].forEach(p => m.c(0x6a6a70).push().t(p[0], .05, p[1]).cyl(.14, .14, .02, 8).pop()); }, 0, 'hover');
+  if (era === 4 && kind < 7) { bush(b, -2, 0, 2, .7, 0x3a8a5a); bush(b, 2, 0, 2.1, .6, 0x3a8a5a); }
+  return B;
+}
+function cMon(era) {
+  const P = CP[era], B = mkB(3100 + era, 10, 5.6), b = B.b;
+  if (era === 0) {
+    hexPad(b, 4.6, P.pad, .5); neonBox(b.push().t(0, .5, 0), 3, 1.2, 3, P.n1, 2.4); b.pop(); b.c(P.dark).push().t(0, .5, 0).box(2.9, 1.2, 2.9).pop();
+    const H = (m) => { m.c(P.n2).E(0.76); m.push().t(0, 0, 0).tbox(1.2, 3.2, .8, 1.6, .9).pop(); m.push().t(0, 3.2, 0).tbox(1.7, 2.2, .9, 2, .8).pop(); m.push().t(0, 5.6, 0).sph(.7, 1, 1.1).pop(); m.push().t(-1.2, 4.6, 0).rz(-.4).box(.4, 2.2, .4).pop(); m.push().t(1.2, 4.6, 0).rz(1.9).box(.4, 2.2, .4).pop(); m.c(P.n1).E(1.26).push().t(0, 5.75, .55).box(.7, .12, .1).pop(); m.E(0); };
+    addPart(B, [0, 1.7, 0], 'y', .3, m => H(m));
+    addPart(B, [0, 1.7, 0], 'y', -.8, m => { m.c(P.n1).E(1.01); for (let k = 0; k < 3; k++) m.push().t(0, 1 + k * 2.2, 0).torus(2.2 - k * .3, .04, 30, 3).pop(); m.E(0); });
+    B.h = 8.6; B.fx.push({ t: 'magic', p: [0, 5, 0], k: 1.5 }); B.lights.push({ p: [0, 5, 2], c: P.n2, i: 4, r: 14 });
+  }
+  if (era === 1) {
+    b.c(P.dark).box(7, .6, 7); let w = 6;
+    for (let i = 0; i < 5; i++) { const y = .6 + i * 1.8; b.c(P.wall).push().t(0, y, 0).box(w * .7, 1.4, w * .7).pop(); b.c(0x8a2a1a).push().t(0, y + 1.4, 0).tbox(w * 1.1, .5, w * 1.1, w * .5, w * .5).pop(); neonBox(b.push().t(0, y + 1.4, 0), w * 1.1, .02, w * 1.1, P.n1, 3); b.pop(); b.c(0xffd23a).E(1.01);[[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(p => b.push().t(p[0] * w * .55, y + 1.1, p[1] * w * .55).sph(.22, 0, 1.3).pop()); b.E(0); w *= .8; }
+    b.c(PAL.gold).E(0.42).SP(1).push().t(0, 9.8, 0).cyl(.08, .02, 2.2, 6).pop().E(0).SP(0);
+    B.h = 12; B.lights.push({ p: [0, 3, 4], c: P.n1, i: 4, r: 14 });
+  }
+  if (era === 2) {
+    b.c(P.dark).box(6, .5, 6);
+    const legs = (s) => { b.c(0x4a4e56).SP(.6).push().t(s * 1.1, .5, 0).box(1.2, 3.6, 1.6).pop().push().t(s * 1.1, .5, .4).box(1.4, .6, 2.4).pop().SP(0); }; legs(-1); legs(1);
+    b.c(0x5a5e66).SP(.6).push().t(0, 4.1, 0).tbox(3.6, 3.6, 2.4, 4.4, 2.6).pop().push().t(0, 7.8, 0).box(1.4, 1.2, 1.4).pop().SP(0);
+    b.c(P.n1).E(1.68).push().t(0, 5.8, 1.31).rx(HP).cyl(.6, .6, .05, 14).pop().push().t(0, 8.4, .71).box(1, .18, .02).pop().E(0);
+    [-1, 1].forEach(s => { b.c(0x4a4e56).SP(.6).push().t(s * 2.5, 7.2, 0).rz(s * .2).box(1, 1, 1).pop().push().t(s * 2.8, 4, .3).rz(s * .1).box(.8, 3.4, .8).pop().SP(0); b.c(P.n2).E(1.26).push().t(s * 2.85, 3.8, .71).box(.5, .1, .02).pop().E(0); });
+    B.h = 9.2; B.lights.push({ p: [0, 5.8, 2.5], c: P.n1, i: 4, r: 12 });
+  }
+  if (era === 3) {
+    b.c(P.dark).box(10, .5, 4);
+    [-1, 1].forEach(s => { b.push().t(s * 3.4, .5, 0); b.c(P.wall).SP(.6).box(2.4, 13, 2.4).SP(0); for (let f = 0; f < 14; f++) { b.c(f % 3 ? 0x0e1420 : P.n1).E(f % 3 ? 0 : 1.8).SP(f % 3 ? 1 : 0).push().t(0, .5 + f * .9, 1.21).box(2, .4, .02).pop(); } b.E(0).SP(0); b.pop(); });
+    b.c(P.wall).SP(.6).push().t(0, 9.5, 0).box(4.4, 1.2, 2).pop().SP(0); neonBox(b.push().t(0, 9.5, 0), 4.42, 1.22, 2.02, P.n1, 3); b.pop();
+    addPart(B, [0, 12.5, 0], 'y', .6, m => { m.c(P.n1).E(1.26); m.push().rx(HP).torus(1.4, .1, 30, 4).pop(); m.c(P.n2).E(1.26).push().rx(HP).t(0, -.05, 0).cyl(.8, .8, .1, 3).pop(); m.E(0); });
+    B.h = 14.5; B.lights.push({ p: [0, 8, 2.5], c: P.n1, i: 4, r: 14 });
+  }
+  if (era === 4) {
+    hexPad(b, 5, P.pad, .6); neonBox(b.push().t(0, .6, 0), 6, 1.8, 6, P.n1, 2.8); b.pop(); b.c(P.dark).push().t(0, .6, 0).box(5.9, 1.8, 5.9).pop();
+    b.c(0xd8d8e0).SP(.8).push().t(0, 2.4, 0).cyl(.9, .7, 2, 12).pop().push().t(0, 4.4, 0).cyl(.35, .3, 55, 10).pop().SP(0);
+    b.c(P.n1).E(1.26); for (let i = 0; i < 18; i++) b.push().t(0, 6 + i * 3, 0).torus(.6, .06, 16, 3).pop(); b.E(0);
+    addPart(B, [0, 6, 0], 'y', 0, m => { m.c(0xf0f0f4).SP(.8).cyl(1, 1, 1.2, 12); m.c(P.n2).E(1.26).push().t(0, .4, 0).cyl(1.02, 1.02, .1, 12, false).pop().E(0).SP(0); }, 0, 'climb');
+    B.h = 60; B.fx.push({ t: 'magic', p: [0, 3, 0], k: 2 }); B.lights.push({ p: [0, 3, 3], c: P.n1, i: 4, r: 14 });
+  }
+  return B;
+}
+const CYBER_MODELS = [0, 1, 2, 3, 4].map(e => [0, 1, 2, 3, 4, 5, 6, 7].map(k => () => cB(k, e)).concat([() => cMon(e)]));
+function buildCyberPerson(gl, era) {
+  const P = CP[era], A = {};
+  let b = nb(5, 0); b.c(0x1c1c22).tbox(.36, .36, .24, .44, .27); b.c(0x24242c).push().t(0, .34, 0).tbox(.44, .22, .27, .38, .24).pop();
+  b.c(P.n1).E(1.01).push().t(-.12, .05, .13).box(.03, .5, .02).pop().push().t(.12, .05, .13).box(.03, .5, .02).pop().E(0); b.c(0x0e0e12).push().t(0, .02, 0).box(.38, .07, .26).pop(); A.torso = b.build(gl);
+  b = nb(6, 0); b.c(0xd8a07a).push().t(0, .13, 0).sph(.13, 1, 1.12).pop(); b.c(0x16161a).push().t(0, .2, -.02).sph(.15, 1, .9).pop(); b.c(P.n2).E(1.26).push().t(0, .16, .115).box(.24, .05, .03).pop().E(0); A.head = b.build(gl);
+  b = nb(7, 0); b.c(0x1c1c22).push().t(0, -.3, 0).tbox(.12, .3, .12, .14, .14).pop(); b.c(0x8a8a92).SP(.8).push().t(0, -.62, 0).tbox(.09, .32, .09, .1, .1).pop().SP(0); b.c(P.n1).E(0.84).push().t(0, -.5, 0).cyl(.055, .055, .03, 8).pop().E(0); b.c(0x2a2a30).push().t(0, -.72, 0).box(.09, .1, .1).pop(); A.arm = b.build(gl);
+  b = nb(8, 0); b.c(0x2a2a34).push().t(0, -.45, 0).tbox(.15, .45, .16, .17, .18).pop(); b.c(0x2a2a34).push().t(0, -.82, 0).tbox(.12, .38, .13, .15, .16).pop(); b.c(0xe8e8ee).push().t(0, -.9, .04).box(.13, .1, .26).pop(); b.c(P.n2).E(0.84).push().t(0, -.95, .04).box(.14, .02, .27).pop().E(0); A.leg = b.build(gl);
+  b = nb(9, 0); b.c(0x16161a).push().t(0, .18, 0).boxC(.36, .28, .3).pop(); b.c(P.n1).E(1.26).push().t(0, .18, .155).boxC(.26, .05, .01).pop().E(0); A.item = b.build(gl);
+  return A;
+}
+function buildCyberArm(gl, era) {
+  const P = CP[era], b = nb(21, 0); b.jit = .03;
+  b.c(0x1c1c22).SP(.3).push().rx(-HP).cyl(.082, .074, .42, 10).pop(); b.c(P.n1).E(1.05).push().rx(-HP).t(0, .1, 0).cyl(.084, .084, .025, 10).pop().push().rx(-HP).t(0, .3, 0).cyl(.08, .08, .02, 10).pop().E(0);
+  b.c(0x9a9aa2).SP(.9).push().t(0, 0, -.42).rx(-HP).cyl(.06, .052, .2, 10).pop(); b.c(0x2a2a30).SP(.4).push().t(0, -.005, -.66).boxC(.1, .09, .11).pop();
+  for (let i = 0; i < 4; i++) b.push().t(-.035 + i * .023, .03, -.69).box(.02, .04, .05).pop(); b.push().t(-.055, 0, -.63).rz(.6).box(.025, .07, .03).pop(); b.c(P.n2).E(1.26).push().t(0, .05, -.62).box(.05, .01, .05).pop().E(0).SP(0);
+  return { arm: b.build(gl) };
+}
+const NODE_CYBER = [[0x2a2630, 0xff3fa4, 2.4], [0x3a2a24, 0xffa02a, 2.2], [0x2e322a, 0xb8ff3a, 2.2], [0x3a4250, 0x3fc8ff, 2.4], [0x3a3448, 0xc88aff, 2.6]];
+function buildCyberNode(era) {
+  const B = mkB(3700 + era, 2.4, 1.5), b = B.b, c = NODE_CYBER[era];
+  b.c(0x16161a).SP(.6).cyl(1.3, 1.45, .35, 8); b.c(c[0]).push().t(0, .35, 0).box(1.4, .9, 1.4).pop().SP(0);
+  b.c(c[1]).E(c[2] * .42).SP(.9); for (let i = 0; i < 9; i++) { const a = i * 2.39; b.push().t(Math.cos(a) * .5, 1.1 + (i % 3) * .15, Math.sin(a) * .5).ry(a).rx(.4).s(.45, 1.5, .45).sph(.22, 0).pop(); } b.E(0).SP(0);
+  b.c(c[1]).E(1.01); [[-.71, 0], [.71, 0], [0, -.71], [0, .71]].forEach(p => b.push().t(p[0], .5, p[1]).boxC(p[0] ? .02 : .9, .08, p[1] ? .02 : .9).pop()); b.E(0);
+  B.lights.push({ p: [0, 1.5, 0], c: c[1], i: 2, r: 6 });
+  return B;
+}
+function buildCyberTreasury(era) {
+  const P = CP[era], B = mkB(3600 + era, 3, 2.4), b = B.b;
+  b.c(P.dark).SP(.6).cyl(2.3, 2.4, .35, 8).SP(0); neonBox(b.push().t(0, .35, 0), 2.6, .02, 2.6, P.n1, 3); b.pop();
+  b.c(PAL.gold).E(0.05).SP(1).push().t(0, .35, 0).lathe([[1.3, 0], [1.1, .3], [.7, .55], [.25, .75], [0, .8]], 9).pop();
+  b.c(0xffd46a).E(0.13); for (let i = 0; i < 30; i++) { const a = i * 2.4, r = .3 + (i % 5) * .2; b.push().t(Math.cos(a) * r, .38 + (1.1 - r) * .5, Math.sin(a) * r).rx(.4 + i).rz(i).cyl(.1, .1, .025, 8).pop(); } b.E(0).SP(0);
+  addPart(B, [0, 2.2, 0], 'y', 1, m => { m.c(PAL.gold).E(0.67).SP(1).push().rx(HP).t(0, -.04, 0).cyl(.55, .55, .08, 20).pop().E(0).SP(0); m.c(P.n2).E(1.01).push().rx(HP).torus(.6, .03, 22, 3).pop().E(0); });
+  B.lights.push({ p: [0, 1.6, 0], c: P.n1, i: 2, r: 6 });
+  return B;
+}
+function buildCyberRelic(gl, era) {
+  const b = nb(850 + era, 0), c = [0xff3fa4, 0xffa02a, 0xb8ff3a, 0x3fc8ff, 0xc88aff][era];
+  b.c(0x1a1a1e).SP(1).boxC(.3, .05, .22); b.c(c).E(1.09).push().t(0, .03, 0).boxC(.18, .02, .12).pop().E(0); b.c(PAL.gold).SP(1).E(0.17); for (let i = 0; i < 5; i++) b.push().t(-.12 + i * .06, 0, .13).boxC(.02, .02, .05).pop(); b.E(0).SP(0);
+  b.c(c).E(0.76).push().t(0, .2, 0).torus(.22, .015, 18, 3).pop().E(0); return b.build(gl);
+}
+function buildCyberDecor(gl, era) {
+  const b = buildGroundDecor(era), r = RNG(3500 + era), lights = [], P = CP[era];
+  const segN = 64;
+  for (let i = 0; i < segN; i++) {
+    const a = i / segN * TAU, x = Math.sin(a) * PLOT_R, z = -Math.cos(a) * PLOT_R; if (Math.abs(a - PI) < .07) continue;
+    b.push().t(x, 0, z).ry(-a); b.c(0x2a2a30).SP(.6).push().t(-1.6, 0, 0).box(.2, 1.3, .2).pop().SP(0); b.c(i % 2 ? P.n1 : P.n2).E(1.26).push().t(0, 1.1, 0).box(3.2, .06, .04).pop().push().t(0, .55, 0).box(3.2, .04, .04).pop().E(0); b.pop();
+  }
+  [-1.5, 1.5].forEach(x => { b.c(0x2a2a30).push().t(x, 0, PLOT_R).box(.6, 4, .6).pop(); b.c(P.n1).E(1.26).push().t(x, 4, PLOT_R).boxC(.5, .1, .5).pop().E(0); });
+  b.c(P.n1).E(1.09).push().t(0, 4.2, PLOT_R).box(3.6, .25, .2).pop().E(0);
+  // city ring
+  const cols = [P.n1, P.n2, 0xffe23a, 0x7affc8, 0xff6a2a];
+  for (let i = 0; i < 150; i++) {
+    const a = r() * TAU, near = i < 60, rad = near ? 42 + r() * 30 : 75 + r() * 140, x = Math.sin(a) * rad, z = -Math.cos(a) * rad;
+    if (Math.abs(((a - PI) + TAU) % TAU) < .12 && rad < 70) continue;
+    const w = 6 + r() * 10, d = 6 + r() * 10, h = near ? 10 + r() * 30 : 25 + r() * 90;
+    b.push().t(x, -.3, z).ry(-a + (r() - .5) * .3);
+    b.c(r() < .5 ? 0x1a1a22 : 0x22202a).SP(.4).box(w, h, d).SP(0);
+    const wc = r() < .5 ? 0xffd9a0 : 0x9ad8ff, fl = Math.floor(h / 3.2);
+    b.c(wc).E(0.29); for (let f = 1; f < fl; f++) if (r() < .55) b.push().t((r() - .5) * w * .5, f * 3.2, d / 2 + .03).box(w * (.2 + r() * .5), .9, .02).pop(); b.E(0);
+    if (r() < .6) { const c1 = cols[Math.floor(r() * cols.length)], c2 = cols[Math.floor(r() * cols.length)]; const sh = 3 + r() * 9, sw = 1.2 + r() * 2.5; sign(b, (r() - .5) * (w - sw), h * (.3 + r() * .5), d / 2 + .1, sw, sh, c1, c2, sh > sw); }
+    if (r() < .35) { b.c(cols[Math.floor(r() * cols.length)]).E(1.09).push().t(0, h - .4, d / 2 + .05).box(w * .9, .2, .02).pop().E(0); }
+    if (r() < .4) { b.c(0x3a3a40).push().t(w * .25, h, 0).cyl(.15, .1, 4 + r() * 6, 5).pop(); b.c(0xff3030).E(1.68).push().t(w * .25, h + 4 + r() * 6, 0).sph(.3, 0).pop().E(0); }
+    b.pop();
+  }
+  // street props
+  [[2, 14], [-2, 14], [2, 22], [-2, 22], [2, 30], [-2, 30], [5.5, -5], [-5.5, -5]].forEach((p, i) => { b.push().t(p[0], 0, p[1]); b.c(0x2a2a30).SP(.6).cyl(.08, .06, 3.4, 6).push().t(0, 3.4, 0).rz(-HP * Math.sign(p[0] || 1)).cyl(.05, .05, .8, 5).pop().SP(0); b.c(i % 2 ? P.n1 : P.n2).E(1.26).push().t(.75 * Math.sign(p[0] || 1), 3.3, 0).box(.5, .08, .2).pop().E(0); b.pop(); lights.push({ p: [p[0] + .75 * Math.sign(p[0] || 1), 3.1, p[1]], c: i % 2 ? P.n1 : P.n2, r: 8, i: 1.6 }); });
+  [[8.6, 3], [-9, 3.4], [9.4, -5.5], [-9.4, -6]].forEach((p, i) => { b.push().t(p[0], 0, p[1]).ry(i); if (i % 2) { b.c(0x2a2a30).box(1, 1.8, .8); b.c(cols[i]).E(1.09).push().t(0, .6, .41).box(.8, 1, .02).pop().E(0); } else { b.c(0x3a3a42).box(1.2, .9, .9); b.c(0x2a6a3a).push().t(.9, 0, 0).cyl(.3, .3, 1, 8).pop(); } b.pop(); });
+  for (let i = 0; i < 14; i++) { const a = r() * TAU, rad = 29 + r() * 3.5, x = Math.sin(a) * rad, z = -Math.cos(a) * rad; if (Math.abs(x) < 3.5 && z > 25) continue; if (MON_POS.some(p => Math.hypot(x - p[0], z - p[2]) < 7)) continue; if (RELIC_SPOTS.some(e => e.some(p => Math.hypot(x - p[0], z - p[2]) < 3))) continue; b.push().t(x, 0, z).ry(r() * TAU); b.c(0x3a3a42).box(1 + r(), .6 + r() * .8, 1 + r()); b.c(cols[i % 5]).E(0.84).push().t(0, .3, .6).box(.6, .1, .02).pop().E(0); b.pop(); }
+  return { mesh: b.build(gl), lights };
+}
+function buildCars(gl) {
+  const M = [];
+  [[0xd8d8e0, 0xff3fa4], [0x2a2a32, 0x3ff0ff], [0xffd23a, 0xff6a2a]].forEach((c, i) => {
+    const b = nb(3800 + i, 0); b.c(c[0]).SP(.8).push().t(0, -.3, 0).tbox(1.6, .5, 3.6, 1.4, 3.2).pop().push().t(0, .2, -.3).tbox(1.3, .5, 1.8, 1.0, 1.2).pop().SP(0);
+    b.c(0x0e1420).SP(1).push().t(0, .22, .3).boxC(1.0, .3, .6).pop().SP(0);
+    b.c(0xffffff).E(1.68).push().t(-.5, -.15, 1.78).boxC(.3, .1, .05).pop().push().t(.5, -.15, 1.78).boxC(.3, .1, .05).pop();
+    b.c(0xff2020).E(1.68).push().t(0, -.15, -1.78).boxC(1.3, .08, .05).pop(); b.c(c[1]).E(1.26).push().t(0, -.56, 0).boxC(1.3, .03, 3).pop().E(0);
+    M.push(b.build(gl));
+  });
+  return M;
+}
+
 // ===================== AUDIO =====================
 const MUSIC = [
   { bpm: 82, root: 50, scale: [0, 3, 5, 7, 10], prog: [0, 3, 4, 2], lead: 'flute', pad: 'drone', perc: 'tribal', bass: 1 },
@@ -2107,6 +2372,13 @@ const MUSIC = [
   { bpm: 100, root: 50, scale: [0, 2, 3, 5, 7, 9, 10], prog: [0, 6, 3, 4], lead: 'recorder', pad: 'drone5', perc: 'tabor', bass: 1 },
   { bpm: 94, root: 45, scale: [0, 2, 3, 5, 7, 8, 10], prog: [0, 5, 3, 6], lead: 'piano', pad: 'organ', perc: 'anvil', bass: 1 },
   { bpm: 108, root: 48, scale: [0, 2, 4, 6, 7, 9, 11], prog: [0, 5, 3, 4], lead: 'arp', pad: 'saw', perc: 'kit', bass: 1 },
+];
+const MUSIC_CY = [
+  { bpm: 96, root: 45, scale: [0, 2, 3, 5, 7, 8, 10], prog: [0, 5, 3, 6], lead: 'arp', pad: 'saw', perc: 'kit', bass: 1 },
+  { bpm: 100, root: 47, scale: [0, 3, 5, 7, 10], prog: [0, 3, 2, 4], lead: 'arp', pad: 'saw', perc: 'kit', bass: 1 },
+  { bpm: 112, root: 43, scale: [0, 1, 3, 5, 7, 8, 10], prog: [0, 1, 5, 4], lead: 'arp', pad: 'saw', perc: 'kit', bass: 1 },
+  { bpm: 104, root: 46, scale: [0, 2, 3, 5, 7, 9, 10], prog: [0, 6, 3, 4], lead: 'piano', pad: 'saw', perc: 'kit', bass: 1 },
+  { bpm: 92, root: 48, scale: [0, 2, 4, 6, 7, 9, 11], prog: [0, 5, 3, 4], lead: 'arp', pad: 'strings', perc: 'kit', bass: 1 },
 ];
 const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 class Sound {
@@ -2132,7 +2404,7 @@ class Sound {
   }
   ir(sec, decay) { const c = this.ctx, n = Math.floor(c.sampleRate * sec), b = c.createBuffer(2, n, c.sampleRate); for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, decay); } return b; }
   setVol(m, s) { this.vm = m; this.vs = s; if (!this.ctx) return; const t = this.ctx.currentTime; this.mus.gain.setTargetAtTime(m * .55, t, .05); this.sfx.gain.setTargetAtTime(s, t, .05); this.amb.gain.setTargetAtTime(s * .5, t, .05); }
-  setEra(e) { this.era = e; this.motif = null; if (this.ctx) this.startAmb(); }
+  setEra(e) { this.era = e; this.theme = THEME; this.motif = null; if (this.ctx) this.startAmb(); }
   duck(v, t) { if (!this.ctx) return; this.duckG.gain.setTargetAtTime(v, this.ctx.currentTime, t || .3); }
   suspend(s) { if (!this.ctx) return; if (s) this.ctx.suspend().catch(() => { }); else this.ctx.resume().catch(() => { }); }
   // primitives
@@ -2193,6 +2465,7 @@ class Sound {
     const s = c.createBufferSource(); s.buffer = this.nbuf; s.loop = true; const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = [500, 700, 600, 400, 350][this.era]; const g = c.createGain(); g.gain.value = [.25, .18, .2, .3, .22][this.era];
     const l = c.createOscillator(), lg = c.createGain(); l.frequency.value = .07; lg.gain.value = 200; l.connect(lg); lg.connect(f.frequency); l.start();
     s.connect(f); f.connect(g); g.connect(this.amb); s.start(); this.ambN.push(s, l);
+    if (this.theme === 2) { const r = c.createBufferSource(); r.buffer = this.nbuf; r.loop = true; const rf = c.createBiquadFilter(); rf.type = 'highpass'; rf.frequency.value = 2500; const rg = c.createGain(); rg.gain.value = .18; r.connect(rf); rf.connect(rg); rg.connect(this.amb); r.start(); this.ambN.push(r); }
     if (this.era === 3 || this.era === 4) { const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = this.era === 3 ? 55 : 60; const of = c.createBiquadFilter(); of.type = 'lowpass'; of.frequency.value = 140; const og = c.createGain(); og.gain.value = .05; o.connect(of); of.connect(og); og.connect(this.amb); o.start(); this.ambN.push(o); }
   }
   ambTick(dt) {
@@ -2205,7 +2478,7 @@ class Sound {
   // music
   sched() {
     if (!this.ctx || this.ctx.state !== 'running') return;
-    const M = MUSIC[this.era], sp = 60 / M.bpm / 4;
+    const M = (this.theme === 2 ? MUSIC_CY : MUSIC)[this.era], sp = 60 / M.bpm / 4;
     if (this.next < this.ctx.currentTime - .5) this.next = this.ctx.currentTime + .05;
     while (this.next < this.ctx.currentTime + .25) { this.note(this.step, this.next, M, sp); this.step++; this.next += sp; }
   }
@@ -2270,9 +2543,9 @@ const EARTH_ERAS = [
   },
 ];
 let ERAS = EARTH_ERAS;
-const ECO = { base: 12, grow: 4.2, inc: .12, decay: 1.06, eraMul: 46000, upBase: .55, upGrow: 1.3, monR: [189, 874, 3950, 52900, 434000], maxL: 40, hitBase: .3, hitIps: .05, wCost: 1.8 };
+const ECO = { base: 12, grow: 4.2, inc: .12, decay: 1.06, eraMul: 46000, upBase: .55, upGrow: 1.3, monR: [279, 3920, 20800, 302000, 1750000], maxL: 40, hitBase: .3, hitIps: .05, wCost: 1.8 };
 function bCost(e, i) { return ECO.base * Math.pow(ECO.grow, i) * Math.pow(ECO.eraMul, e) * WK; }
-function setWorld(ren) { WK = Math.pow(ECO.wCost, ren); THEME = ren % 2; if (typeof applyTheme === 'function') applyTheme(); }
+function setWorld(ren) { WK = Math.pow(ECO.wCost, ren); THEME = ren % 3; if (typeof applyTheme === 'function') applyTheme(); }
 function lvMult(L) { if (L <= 0) return 0; let m = 1 + (L - 1) * .5; if (L >= 10) m *= 2; if (L >= 20) m *= 2; if (L >= 30) m *= 2; if (L >= 40) m *= 3; return m; }
 function bInc(e, i, L) { return bCost(e, i) / WK * ECO.inc / Math.pow(ECO.decay, i) * lvMult(L); }
 function upCost(e, i, L) { return bCost(e, i) * ECO.upBase * Math.pow(ECO.upGrow, L - 1); }
@@ -2287,7 +2560,7 @@ const EARTH_QUESTS = [
   [{ t: 'buy', n: 3, d: 'Possède 3 bâtiments modernes' }, { t: 'pick', n: 9, d: 'Achète la Pioche d\'obsidienne' }, { t: 'aura', n: 5, d: 'Obtiens l\'Aura cosmique' }, { t: 'frenzy', n: 3, d: 'Déclenche 3 frénésies' }, { t: 'level', n: 25, d: 'Améliore un bâtiment au niveau 25' }, { t: 'buy', n: 8, d: 'Possède les 8 bâtiments' }, { t: 'level', n: 40, d: 'Atteins le palier ultime 40' }, { t: 'relic', n: 1, d: 'Trouve une relique moderne' }],
 ];
 let QUESTS = EARTH_QUESTS;
-const SUF = ['', ' k', ' M', ' Md', ' Bn', ' Bd', ' Tn', ' Td', ' Qa', ' Qd', ' Qi'];
+const SUF = ['', ' k', ' M', ' Md', ' Bn', ' Bd', ' Tn', ' Td', ' Qa', ' Qd', ' Qi', ' Sx', ' Sp', ' Oc', ' No', ' Dc', ' UDc', ' DDc', ' TDc'];
 function fmt(n) {
   if (!isFinite(n)) return '∞'; if (n < 0) return '-' + fmt(-n);
   if (n < 1000) return n < 10 && n % 1 ? n.toFixed(1).replace('.', ',') : Math.floor(n).toString();
@@ -2297,16 +2570,18 @@ function fmt(n) {
 function fmtTime(s) { s = Math.floor(s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return h ? `${h} h ${String(m).padStart(2, '0')}` : m ? `${m} min ${String(x).padStart(2, '0')}` : `${x} s`; }
 
 const PICKS = [
-  ['Pioche usée', 1, 0, 0, 0x8a8a8a], ['Pioche en pierre', 1.5, 0, 0.00846, 0x9a948a], ['Pioche en cuivre', 2.2, 0, 0.2534, 0xc0703f], ['Pioche en fer', 3.2, 1, 0.02925, 0x8f949c], ['Pioche en acier', 4.5, 1, 0.2923, 0xc8d2dc],
-  ['Pioche en or', 6.5, 2, 0.00942, 0xf2c14e], ['Pioche en rubis', 9, 2, 0.1478, 0xe0284a], ['Pioche en émeraude', 13, 3, 0.002004, 0x2ed47a], ['Pioche en diamant', 18, 3, 0.0347, 0x9ff0ff], ['Pioche d\'obsidienne', 26, 4, 0.000666, 0x9a4dff], ['Pioche stellaire', 36, 4, 0.07584, 0xffe27a]];
+  ['Pioche usée', 1, 0, 0, 0x8a8a8a], ['Pioche en pierre', 1.5, 0, 0.000101, 0x9a948a], ['Pioche en cuivre', 2.2, 0, 0.154, 0xc0703f], ['Pioche en fer', 3.2, 1, 0.0115, 0x8f949c], ['Pioche en acier', 4.5, 1, 0.156, 0xc8d2dc],
+  ['Pioche en or', 6.5, 2, 0.00861, 0xf2c14e], ['Pioche en rubis', 9, 2, 0.0716, 0xe0284a], ['Pioche en émeraude', 13, 3, 0.00185, 0x2ed47a], ['Pioche en diamant', 18, 3, 0.0343, 0x9ff0ff], ['Pioche d\'obsidienne', 26, 4, 0.00105, 0x9a4dff], ['Pioche stellaire', 36, 4, 0.196, 0xffe27a]];
 const AURAS = [['Aucune aura', 1, 0, 0, 0xffffff], ['Aura de braise', 1.5, 0, 0.232, 0xff7a2a], ['Aura des marées', 2, 1, 0.258, 0x3fd0ff], ['Aura de tempête', 3, 2, 0.251, 0xb06bff], ['Aura solaire', 4.5, 3, 0.0391, 0xffd34a], ['Aura cosmique', 7, 4, 0.0307, 0xff5ad8]];
+const PETS = [['Aucun familier', 1, 0, 0, 0xffffff], ['Renard de braise', 1.25, 0, .03, 0xff7a2a], ['Hibou des neiges', 1.5, 1, .1, 0xe8f0ff], ['Loup spectral', 1.8, 2, .0704, 0x5ad0ff], ['Mini-dragon', 2.2, 3, .0163, 0xff3a3a], ['Phénix', 2.8, 4, .0111, 0xffc23a]];
+function petCost(k) { const a = PETS[k]; return monCost(a[2]) * a[3]; }
 function pickCost(k) { const p = PICKS[k]; return monCost(p[2]) * p[3]; }
 function auraCost(k) { const a = AURAS[k]; return monCost(a[2]) * a[3]; }
-function relicKey(th, e, k) { return th ? `s${e}-${k}` : `${e}-${k}`; }
+function relicKey(th, e, k) { return th === 1 ? `s${e}-${k}` : th === 2 ? `c${e}-${k}` : `${e}-${k}`; }
 function newState() {
   return {
     v: 1, money: 0, total: 0, run: 0, era: 0, lv: [0, 0, 0, 0, 0, 0, 0, 0], mon: [false, false, false, false, false], relics: {}, q: 0, qp: { hits: 0, perf: 0, frenz: 0, ups: 0 },
-    st: { hits: 0, perf: 0, frenz: 0, time: 0, builds: 0, ups: 0, best: 0, earned: 0 }, ren: 0, pick: 0, aura: 0, last: Date.now(), tut: 0, started: false
+    st: { hits: 0, perf: 0, frenz: 0, time: 0, builds: 0, ups: 0, best: 0, earned: 0 }, ren: 0, pick: 0, aura: 0, pet: 0, daily: { last: '', streak: 0 }, last: Date.now(), tut: 0, started: false
   };
 }
 class Economy {
@@ -2315,7 +2590,8 @@ class Economy {
   relicMult() { return 1 + .05 * Object.keys(this.S.relics).length; }
   auraMult() { return AURAS[this.S.aura][1]; }
   pickMult() { return PICKS[this.S.pick][1]; }
-  mult() { return this.renMult() * this.relicMult() * this.auraMult(); }
+  petMult() { return PETS[this.S.pet || 0][1]; }
+  mult() { return this.renMult() * this.relicMult() * this.auraMult() * this.petMult(); }
   ips(noFrenzy) { const S = this.S; let s = 0; for (let i = 0; i < 8; i++) s += bInc(S.era, i, S.lv[i]); return s * this.mult() * (!noFrenzy && this.frenzy > 0 ? 2 : 1); }
   owned() { return this.S.lv.filter(l => l > 0).length; }
   maxLevel() { return Math.max(...this.S.lv); }
@@ -2332,11 +2608,13 @@ class Economy {
   buyPick() { const S = this.S, k = S.pick + 1; if (this.pickState() !== 0) return false; S.money -= pickCost(k); S.pick = k; return true; }
   auraState() { const S = this.S, k = S.aura + 1; if (k >= AURAS.length) return 1; if (S.era < AURAS[k][2]) return 2; return S.money >= auraCost(k) ? 0 : 3; }
   buyAura() { const S = this.S, k = S.aura + 1; if (this.auraState() !== 0) return false; S.money -= auraCost(k); S.aura = k; return true; }
+  petState() { const S = this.S, k = (S.pet || 0) + 1; if (k >= PETS.length) return 1; if (S.era < PETS[k][2]) return 2; return S.money >= petCost(k) ? 0 : 3; }
+  buyPet() { const S = this.S, k = (S.pet || 0) + 1; if (this.petState() !== 0) return false; S.money -= petCost(k); S.pet = k; return true; }
   monCost() { return monCost(this.S.era); }
   canMonument() { return this.owned() === 8 && !this.S.mon[this.S.era]; }
   buyMonument() { const S = this.S, c = this.monCost(); if (!this.canMonument() || S.money < c) return false; S.money -= c; S.mon[S.era] = true; return true; }
   advanceEra() { const S = this.S; if (S.era >= 4) return false; S.era++; S.lv = [0, 0, 0, 0, 0, 0, 0, 0]; S.q = 0; S.qp = { hits: 0, perf: 0, frenz: 0, ups: 0 }; S.money = bCost(S.era, 0) * 3; return true; }
-  renaissance() { const S = this.S; S.ren++; S.era = 0; S.lv = [0, 0, 0, 0, 0, 0, 0, 0]; S.mon = [false, false, false, false, false]; S.money = 0; S.run = 0; S.q = 0; S.pick = 0; S.aura = 0; S.qp = { hits: 0, perf: 0, frenz: 0, ups: 0 }; this.frenzy = 0; this.combo = 0; setWorld(S.ren); }
+  renaissance() { const S = this.S; S.ren++; S.era = 0; S.lv = [0, 0, 0, 0, 0, 0, 0, 0]; S.mon = [false, false, false, false, false]; S.money = 0; S.run = 0; S.q = 0; S.pick = 0; S.aura = 0; S.pet = 0; S.qp = { hits: 0, perf: 0, frenz: 0, ups: 0 }; this.frenzy = 0; this.combo = 0; setWorld(S.ren); }
   quest() { const L = QUESTS[this.S.era]; return this.S.q < L.length ? L[this.S.q] : null; }
   questProgress(q) {
     const S = this.S; if (!q) return [0, 1];
@@ -2420,6 +2698,7 @@ class UI {
       h = `<div id="title" class="scr"><div id="logo"><h1>STRIKE</h1><p>De la pierre aux étoiles</p></div>
       <div id="tmenu">${has ? `<button class="btn pri" data-a="play">Continuer</button><div id="tsave">Monde ${S.ren + 1} · ${er.name} · ${fmt(S.money)} or</div>` : `<button class="btn pri" data-a="play">Jouer</button><div id="tsave"></div>`}
       <div class="row2"><button class="btn" data-a="settings">Paramètres</button><button class="btn" data-a="help">Comment jouer</button></div>
+      <button class="btn" data-a="lb">🏆 Classement</button>
       ${has ? '<button class="btn red" data-a="newgame">Nouvelle partie</button>' : ''}</div>
       <div class="who">Joueur : <b>${(this.g.pseudo || '').replace(/[<>&]/g, '')}</b> <button data-a="pseudo">Changer de pseudo</button> · <button data-a="logout">Se déconnecter</button></div></div>
       <div id="tfoot">Un tycoon à la première personne · Sauvegarde automatique</div></div>`;
@@ -2433,7 +2712,7 @@ class UI {
       <div class="stat"><small>Constructions</small><b>${st.builds}</b></div><div class="stat"><small>Améliorations</small><b>${st.ups}</b></div>
       <div class="stat"><small>Reliques</small><b>${nR} / 15</b></div><div class="stat"><small>Multiplicateur total</small><b>×${fmt(this.g.eco.mult())}</b></div>
       </div>
-      <button class="btn pri" data-a="resume">Reprendre</button><div class="row2"><button class="btn" data-a="settings">Paramètres</button><button class="btn" data-a="help">Comment jouer</button></div><button class="btn" data-a="totitle">Écran titre</button></div></div>`;
+      <button class="btn pri" data-a="resume">Reprendre</button><div class="row2"><button class="btn" data-a="settings">Paramètres</button><button class="btn" data-a="help">Comment jouer</button></div><div class="row2"><button class="btn" data-a="lb">🏆 Classement</button><button class="btn" data-a="totitle">Écran titre</button></div></div></div>`;
     }
     if (name === 'settings') {
       const seg = (k, opts, v) => `<div class="seg">${opts.map(o => `<button data-a="seg" data-k="${k}" data-v="${o[0]}" class="${o[0] == v ? 'on' : ''}">${o[1]}</button>`).join('')}</div>`;
@@ -2459,6 +2738,7 @@ class UI {
       <h3>Améliorer</h3><p>Regarde un bâtiment et appuie sur <b>E</b> (ou le bouton vert) pour l'améliorer. Maintiens pour enchaîner. Aux paliers 10, 20, 30 et 40, la production double.</p>
       <h3>Changer d'ère</h3><p>Quand tes 8 bâtiments sont construits, une dalle dorée apparaît : construis le <b>monument</b> pour passer à l'ère suivante. Il restera comme trophée.</p>
       <h3>Boutique</h3><p>Le bouton <b>Boutique</b> (touche B) vend 10 <b>pioches</b> : chacune multiplie l'or de chaque coup. Les <b>auras</b>, plus chères, multiplient tous tes gains. Elles se débloquent au fil des ères.</p>
+      <h3>Familiers et événements</h3><p>Les <b>familiers</b> (Boutique) te suivent partout et multiplient tous tes gains. Ouvre l'œil : une <b>météorite dorée</b> peut tomber (frappe-la 6 fois) ou une <b>pluie d'or</b> peut s'abattre (ramasse les pièces). Reviens chaque jour pour ta <b>récompense quotidienne</b>.</p>
       <h3>Secrets</h3><p>Trois <b>reliques</b> sont cachées à chaque ère : chacune donne +5 % de production pour toujours. Le dernier monument déclenche la <b>Renaissance</b> : tu pars dans un nouveau monde, avec un argent ×2 à chaque fois.</p>
       <h3>Commandes</h3><p>${this.touch ? 'Joystick à gauche pour marcher, glisse à droite pour regarder. Boutons : frapper, sauter, courir, améliorer.' : 'ZQSD / WASD pour marcher, souris pour regarder, clic pour frapper, E pour améliorer, Espace pour sauter, Maj pour courir, Échap pour le menu.'}</p>
       <button class="btn pri" data-a="back">Compris</button></div></div>`;
@@ -2470,30 +2750,43 @@ class UI {
       h = `<div class="scr dim"><div class="panel"><h2>Bon retour !</h2><div class="sub">Pendant ton absence (${fmtTime(data.t)}), ton empire a continué de produire</div><div class="big num">+${fmt(data.v)}</div><button class="btn pri" data-a="collect">Récupérer</button></div></div>`;
     }
     if (name === 'renaissance') {
-      const nx = (S.ren + 1) % 2, m0 = Math.pow(2, S.ren), m1 = m0 * 2;
-      h = `<div class="scr dim"><div class="panel"><h2>Renaissance</h2><div class="sub">${THEME ? 'La porte des étoiles s\'ouvre.' : 'Ta fusée a quitté la Terre.'} Un nouveau monde t'attend.</div>
+      const nx = (S.ren + 1) % 3, m0 = Math.pow(2, S.ren), m1 = m0 * 2;
+      h = `<div class="scr dim"><div class="panel"><h2>Renaissance</h2><div class="sub">${THEME === 2 ? 'L\'ascenseur orbital t\'emporte vers le ciel.' : THEME ? 'La porte des étoiles s\'ouvre.' : 'Ta fusée a quitté la Terre.'} Un nouveau monde t'attend.</div>
       <div class="stats"><div class="stat"><small>Richesse de ce monde</small><b class="num">${fmt(S.run)}</b></div><div class="stat"><small>Temps total</small><b>${fmtTime(S.st.time)}</b></div></div>
       <div class="sub" style="margin:8px 0 0">Prochain monde</div><div class="big" style="margin-top:2px">Monde ${S.ren + 2} · ${WORLD_NAMES[nx]}</div>
       <div class="stats"><div class="stat"><small>Argent</small><b>×${fmt(m0)} → <span style="color:var(--gold)">×${fmt(m1)}</span></b></div><div class="stat"><small>Pioches et auras</small><b>Repartent à zéro</b></div></div>
       <button class="btn pri" data-a="reborn">Partir pour le monde ${S.ren + 2}</button></div></div>`;
     }
+    if (name === 'daily') {
+      const g = this.g, inf = g.dailyInfo(); let tiles = '';
+      for (let d = 0; d < 7; d++) tiles += `<div class="dt ${d < inf.day ? 'got' : ''} ${d === inf.day ? 'now' : ''} ${d === 6 ? 'big7' : ''}"><small>Jour ${d + 1}</small><b>${d < inf.day ? '✓' : '+' + fmt(g.dailyReward(d))}</b>${d === 6 ? '<i>+ frénésie</i>' : ''}</div>`;
+      h = `<div class="scr dim"><div class="panel"><h2>Récompense du jour</h2><div class="sub">Série de ${inf.streak} jour${inf.streak > 1 ? 's' : ''} · reviens chaque jour pour des gains de plus en plus gros</div><div class="daily">${tiles}</div><button class="btn pri" data-a="daily">Récupérer +${fmt(g.dailyReward(inf.day))}</button></div></div>`;
+    }
+    if (name === 'lb') {
+      const g = this.g, L = g.lbData; let body;
+      if (g.lbErr) body = `<div class="sub" style="margin:18px 0">${g.lbErr}</div>`;
+      else if (!L) body = `<div class="sub" style="margin:18px 0">Chargement…</div>`;
+      else if (!L.length) body = `<div class="sub" style="margin:18px 0">Personne n'est encore classé.</div>`;
+      else body = '<div class="lbl2"><span>#</span><span>Joueur</span><span>Renaissances</span><span>Argent</span></div>' + L.map((p, i) => `<div class="lbr ${g.auth && p.id === g.auth.id ? 'me' : ''}"><span class="rk">${i === 0 ? '🥇' : i === 1 ? '🥈' : i + 1}</span><span class="pn">${p.pseudo.replace(/[<>&]/g, '')}</span><span>${p.ren}</span><span class="num">${fmt(p.money)}</span></div>`).join('');
+      h = `<div class="scr dim"><div class="panel"><h2>Classement</h2><div class="sub">Renaissances, puis argent</div>${body}<button class="btn pri" data-a="back">Retour</button></div></div>`;
+    }
     if (name === 'shop') {
-      const eco = this.g.eco, tab = data === 'aura' ? 'aura' : 'pick'; this.shopTab = tab;
-      const L = tab === 'pick' ? PICKS : AURAS, cur = tab === 'pick' ? S.pick : S.aura, st = tab === 'pick' ? eco.pickState() : eco.auraState();
-      const roman = e => ERAS[e].roman, word = THEME ? 'Planète' : 'Ère';
+      const eco = this.g.eco, tab = data === 'aura' || data === 'pet' ? data : 'pick'; this.shopTab = tab;
+      const L = tab === 'pick' ? PICKS : tab === 'pet' ? PETS : AURAS, cur = tab === 'pick' ? S.pick : tab === 'pet' ? (S.pet || 0) : S.aura, st = tab === 'pick' ? eco.pickState() : tab === 'pet' ? eco.petState() : eco.auraState();
+      const roman = e => ERAS[e].roman, word = ERA_WORD[THEME];
       let rows = '';
       for (let k = 1; k < L.length; k++) {
-        const it = L[k], col = '#' + it[4].toString(16).padStart(6, '0'), cost = tab === 'pick' ? pickCost(k) : auraCost(k);
+        const it = L[k], col = '#' + it[4].toString(16).padStart(6, '0'), cost = tab === 'pick' ? pickCost(k) : tab === 'pet' ? petCost(k) : auraCost(k);
         let right;
         if (k < cur) right = '<span class="own">Possédée</span>'; else if (k === cur) right = '<span class="own eq">Équipée ✓</span>';
-        else if (k === cur + 1) { if (st === 2) right = `<span class="lock">${word} ${roman(it[2])} requise</span>`; else right = `<button class="buy ${st === 0 ? 'ok' : ''}" data-a="${tab === 'pick' ? 'bpick' : 'baura'}">${fmt(cost)}</button>`; }
+        else if (k === cur + 1) { if (st === 2) right = `<span class="lock">${word} ${roman(it[2])} requise</span>`; else right = `<button class="buy ${st === 0 ? 'ok' : ''}" data-a="${tab === 'pick' ? 'bpick' : tab === 'pet' ? 'bpet' : 'baura'}">${fmt(cost)}</button>`; }
         else right = `<span class="lock">${S.era < it[2] ? word + ' ' + roman(it[2]) : 'Verrouillée'}</span>`;
-        const ic = tab === 'pick' ? `<svg viewBox="0 0 24 24" width="26" height="26"><path d="M4 20l9-9" stroke="#8a5a32" stroke-width="2.6" stroke-linecap="round"/><path d="M6 7c4-4 9-4 13-1-3-1-6 0-8 2l2 2c2-2 3-5 2-8 3 4 3 9-1 13" fill="${col}" stroke="${col}" stroke-width="1.2" stroke-linejoin="round"/></svg>` : `<span class="orb" style="background:radial-gradient(circle at 35% 35%,#fff,${col} 45%,transparent 72%);box-shadow:0 0 16px ${col}"></span>`;
-        rows += `<div class="srow ${k <= cur ? 'have' : ''} ${k === cur + 1 ? 'next' : ''}"><div class="sic">${ic}</div><div class="snm">${it[0]}<small>×${String(it[1]).replace('.', ',')} ${tab === 'pick' ? 'par coup' : 'sur tous les gains'}</small></div>${right}</div>`;
+        const ic = tab === 'pick' ? `<svg viewBox="0 0 24 24" width="26" height="26"><path d="M4 20l9-9" stroke="#8a5a32" stroke-width="2.6" stroke-linecap="round"/><path d="M6 7c4-4 9-4 13-1-3-1-6 0-8 2l2 2c2-2 3-5 2-8 3 4 3 9-1 13" fill="${col}" stroke="${col}" stroke-width="1.2" stroke-linejoin="round"/></svg>` : tab === 'pet' ? `<svg viewBox="0 0 24 24" width="26" height="26" fill="${col}"><circle cx="6" cy="10" r="2.4"/><circle cx="10" cy="6" r="2.4"/><circle cx="15" cy="6" r="2.4"/><circle cx="19" cy="10" r="2.4"/><path d="M12.5 11c3 0 6 4 6 6.5 0 2-2 2.5-3 2-1.2-.5-2-1-3-1s-1.8.5-3 1c-1 .5-3 0-3-2 0-2.5 3-6.5 6-6.5z"/></svg>` : `<span class="orb" style="background:radial-gradient(circle at 35% 35%,#fff,${col} 45%,transparent 72%);box-shadow:0 0 16px ${col}"></span>`;
+        rows += `<div class="srow ${k <= cur ? 'have' : ''} ${k === cur + 1 ? 'next' : ''}"><div class="sic">${ic}</div><div class="snm">${it[0]}<small>×${String(it[1]).replace('.', ',')} ${tab === 'pick' ? 'par coup' : tab === 'pet' ? 'sur tous les gains · te suit partout' : 'sur tous les gains'}</small></div>${right}</div>`;
       }
       const info = tab === 'pick' ? `Un coup parfait rapporte environ <b>${fmt(eco.hitValue(true))}</b>` : `Production actuelle : <b>${fmt(eco.ips(true))} /s</b>`;
       h = `<div class="scr dim"><div class="panel shop"><h2>Boutique</h2><div class="sub"><b class="num" style="color:var(--gold)">${fmt(S.money)}</b> or disponibles</div>
-      <div class="tabs"><button data-a="tab" data-t="pick" class="${tab === 'pick' ? 'on' : ''}">Pioches</button><button data-a="tab" data-t="aura" class="${tab === 'aura' ? 'on' : ''}">Auras</button></div>
+      <div class="tabs"><button data-a="tab" data-t="pick" class="${tab === 'pick' ? 'on' : ''}">Pioches</button><button data-a="tab" data-t="aura" class="${tab === 'aura' ? 'on' : ''}">Auras</button><button data-a="tab" data-t="pet" class="${tab === 'pet' ? 'on' : ''}">Familiers</button></div>
       <div class="sinfo">${info}</div><div class="slist">${rows}</div><button class="btn pri" data-a="resume">Retour au jeu</button></div></div>`;
     }
     if (name === 'error') {
@@ -2531,6 +2824,9 @@ class UI {
       case 'tab': this.showScreen('shop', b.dataset.t); break;
       case 'bpick': if (g.buyPick()) this.showScreen('shop', 'pick'); break;
       case 'baura': if (g.buyAura()) this.showScreen('shop', 'aura'); break;
+      case 'bpet': if (g.buyPet()) this.showScreen('shop', 'pet'); break;
+      case 'daily': g.claimDaily(); g.enterPlay(); break;
+      case 'lb': this.back = this.screen; this.showScreen('lb'); g.lbFetch().then(() => { if (this.screen === 'lb') this.showScreen('lb'); }); break;
       case 'seg': { const k = b.dataset.k, v = parseFloat(b.dataset.v); this.setSetting(k, v); b.parentNode.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); break; }
       case 'tg': { const k = b.dataset.k, v = g.set[k] ? 0 : 1; this.setSetting(k, v); b.classList.toggle('on', !!v); break; }
     }
@@ -2559,9 +2855,9 @@ class UI {
     if (q) { const [a, b] = eco.questProgress(q); this.el.quest.classList.remove('hide'); this.el.qd.textContent = q.d; this.el.qb.style.width = clamp(a / b, 0, 1) * 100 + '%'; this.el.qp.textContent = `${fmt(Math.min(a, b))} / ${fmt(b)}`; this.el.qw.textContent = fmt(eco.questReward()); this.el.qn.textContent = `${S.q + 1}/${QUESTS[S.era].length}`; }
     else { this.el.qd.textContent = own < 8 ? 'Construis tous les bâtiments' : `Bâtis le monument : ${ERAS[S.era].mon}`; this.el.qb.style.width = (own < 8 ? own / 8 : clamp(S.money / eco.monCost(), 0, 1)) * 100 + '%'; this.el.qp.textContent = own < 8 ? `${own} / 8` : `${fmt(S.money)} / ${fmt(eco.monCost())}`; this.el.qw.textContent = own < 8 ? '—' : 'Nouvelle ère'; this.el.qn.textContent = ''; }
     const f2 = v => (v >= 100 ? fmt(v) : String(+v.toFixed(2)).replace('.', ','));
-    const bh = `<span class="bc"><i>Renaissance</i>×${f2(eco.renMult())}</span><span class="bc"><i>Pioche</i>×${f2(eco.pickMult())}</span><span class="bc" style="${S.aura ? 'border-color:#' + AURAS[S.aura][4].toString(16).padStart(6, '0') : ''}"><i>Aura</i>×${f2(eco.auraMult())}</span>`;
+    const bh = `<span class="bc"><i>Renaissance</i>×${f2(eco.renMult())}</span><span class="bc"><i>Pioche</i>×${f2(eco.pickMult())}</span><span class="bc"><i>Familier</i>×${f2(eco.petMult())}</span><span class="bc" style="${S.aura ? 'border-color:#' + AURAS[S.aura][4].toString(16).padStart(6, '0') : ''}"><i>Aura</i>×${f2(eco.auraMult())}</span>`;
     if (this.el.boosts._h !== bh) { this.el.boosts.innerHTML = bh; this.el.boosts._h = bh; }
-    this.el.shopDot.classList.toggle('hide', !(eco.pickState() === 0 || eco.auraState() === 0));
+    this.el.shopDot.classList.toggle('hide', !(eco.pickState() === 0 || eco.auraState() === 0 || eco.petState() === 0));
   }
   questDone() { this.el.quest.classList.remove('done'); void this.el.quest.offsetWidth; this.el.quest.classList.add('done'); }
   bump() { this.el.mval.classList.remove('bump'); void this.el.mval.offsetWidth; this.el.mval.classList.add('bump'); }
@@ -2608,8 +2904,9 @@ function delKey(k) { try { const s = stor(); if (s) s.removeItem(k); } catch (e)
 const raf = () => new Promise(r => requestAnimationFrame(() => r()));
 const angDiff = (a, b) => { let d = (b - a) % TAU; if (d > PI) d -= TAU; if (d < -PI) d += TAU; return d; };
 
-function applyTheme() { if (THEME === 1) { ERAS = PLANETS; ERA_MODELS = SPACE_MODELS; ENVS = ENVS_SPACE; QUESTS = QUESTS_SPACE; } else { ERAS = EARTH_ERAS; ERA_MODELS = EARTH_MODELS; ENVS = ENVS_EARTH; QUESTS = EARTH_QUESTS; } }
-const WORLD_NAMES = ['Berceau terrestre', 'Odyssée solaire'];
+function applyTheme() { if (THEME === 2) { ERAS = DISTRICTS; ERA_MODELS = CYBER_MODELS; ENVS = ENVS_CYBER; QUESTS = QUESTS_CYBER; } else if (THEME === 1) { ERAS = PLANETS; ERA_MODELS = SPACE_MODELS; ENVS = ENVS_SPACE; QUESTS = QUESTS_SPACE; } else { ERAS = EARTH_ERAS; ERA_MODELS = EARTH_MODELS; ENVS = ENVS_EARTH; QUESTS = EARTH_QUESTS; } }
+const WORLD_NAMES = ['Berceau terrestre', 'Odyssée solaire', 'Néo-Tokyo'];
+const ERA_WORD = ['Ère', 'Planète', 'Quartier'];
 const FPS_CAPS = [30, 45, 60, 75, 90, 120, 144, 165, 240, 0];
 class Game {
   constructor() {
@@ -2645,7 +2942,7 @@ class Game {
     const L = (p, m) => { this.ui.el.screens.innerHTML = `<div id="loading" class="scr"><h1>STRIKE</h1><div id="lbar"><i style="width:${p}%"></i></div><div id="lmsg">${m}</div></div>`; };
     L(5, 'Préparation du monde'); document.getElementById('fade').classList.add('out'); await raf(); await raf();
     const gl = this.gl;
-    this.padMesh = buildPad(gl); this.arrowMesh = buildArrow(gl); this.picks = PICKS.map((_, k) => buildPick(gl, k));
+    this.padMesh = buildPad(gl); this.arrowMesh = buildArrow(gl); this.picks = PICKS.map((_, k) => buildPick(gl, k)); this.initFeatures();
     const rb = nb(820, 0); rb.c(0xffffff).E(.6).torus(1, .035, 48, 3); this.ringMesh = rb.build(gl);
     this.pA = new Particles(gl, 2600, true); this.pB = new Particles(gl, 1600, false);
     L(20, 'Sculpture du terrain'); await raf();
@@ -2703,10 +3000,11 @@ class Game {
     this.snd.init(); this.snd.setVol(this.set.mus, this.set.sfx);
     this.ui.hideScreen(); this.S.started = true;
     if (this.offline) { this.mode = 'pause'; this.ui.showScreen('offline', this.offline); return; }
-    this.enter = { t: 0, from: { p: this.cam.p.slice(), yaw: this.cam.yaw, pitch: this.cam.pitch } };
-    this.mode = 'enter'; this.lockPointer();
+    if (this.dailyPending()) { this.mode = 'pause'; this.ui.showScreen('daily'); return; }
+    this.enterPlay();
   }
-  collectOffline() { const o = this.offline; this.offline = null; if (o) { this.eco.earn(o.v); this.snd.play('quest'); this.ui.toast('star', `+${fmt(o.v)} or`, 'Production hors ligne récupérée'); } this.ui.hideScreen(); this.enter = { t: 0, from: { p: this.cam.p.slice(), yaw: this.cam.yaw, pitch: this.cam.pitch } }; this.mode = 'enter'; this.lockPointer(); }
+  collectOffline() { const o = this.offline; this.offline = null; if (o) { this.eco.earn(o.v); this.snd.play('quest'); this.ui.toast('star', `+${fmt(o.v)} or`, 'Production hors ligne récupérée'); } if (this.dailyPending()) { this.mode = 'pause'; this.ui.showScreen('daily'); return; } this.enterPlay(); }
+  enterPlay() { this.ui.hideScreen(); this.enter = { t: 0, from: { p: this.cam.p.slice(), yaw: this.cam.yaw, pitch: this.cam.pitch } }; this.mode = 'enter'; this.lockPointer(); }
   pause(on) {
     if (on) { if (this.mode !== 'play') return; this.mode = 'pause'; this.ui.hud(false); this.ui.showScreen('pause'); this.unlockPointer(); this.snd.duck(.35); this.save(); this.clearInput(); }
     else { if (this.mode !== 'pause') return; this.ui.hideScreen(); this.mode = 'play'; this.ui.hud(true); this.snd.duck(1); this.lockPointer(); }
@@ -2781,13 +3079,13 @@ class Game {
   doHit() {
     if (this.mode !== 'play' || this.swingCD > 0) return;
     this.swing = 0; this.swingHit = false; this.swingCD = .36; this.snd.play('swing');
-    this.hitPerfect = this.aimNode && this.ringWin();
-    this.hitAim = this.aimNode;
+    const aim = this.aimNode ? 'node' : this.aimMet ? 'met' : null; this.hitPerfect = !!aim && this.ringWin(); this.hitAim = aim;
   }
   ringR() { return lerp(2.0, .55, this.ringT); }
   ringWin() { const r = this.ringR(); return r > .86 && r < 1.16; }
   impact() {
     if (!this.hitAim) { this.shake = Math.max(this.shake, .015); return; }
+    if (this.hitAim === 'met') { this.ringT = 0; this.meteorHit(this.hitPerfect); return; }
     const S = this.S, eco = this.eco, p = this.hitPerfect;
     if (p) { eco.combo++; S.st.perf++; S.qp.perf++; if (eco.combo > S.st.best) S.st.best = eco.combo; S.qp.bestc = Math.max(S.qp.bestc || 0, eco.combo); }
     else eco.combo = 0;
@@ -2796,7 +3094,7 @@ class Game {
     this.snd.play('hit', eco.combo); if (p) this.snd.play('perfect', eco.combo);
     const sp = this.proj(NODE_POS[0], 1.3, NODE_POS[2]); if (sp) this.ui.pop(sp[0] + (Math.random() - .5) * 60, sp[1] - 10, p ? `+${fmt(v)}<small>${eco.combo >= 2 ? 'PARFAIT ×' + eco.combo : 'PARFAIT'}</small>` : '+' + fmt(v), p ? 'p' : '');
     // debris
-    const NC = THEME ? NODE_SPACE : NODE_COL, c = lin(NC[S.era][1]), c0 = lin(NC[S.era][0]);
+    const NC = THEME === 2 ? NODE_CYBER : THEME ? NODE_SPACE : NODE_COL, c = lin(NC[S.era][1]), c0 = lin(NC[S.era][0]);
     const f = this.camFwd();
     const hx = NODE_POS[0] - f[0] * .9, hz = NODE_POS[2] - f[2] * .9;
     for (let i = 0; i < (p ? 26 : 14); i++) { const k = Math.random() < .5 ? c : c0; this.pB.emit(hx, 1.0, hz, (Math.random() - .5) * 4 - f[0] * 2, 2 + Math.random() * 3, (Math.random() - .5) * 4 - f[2] * 2, .7 + Math.random() * .4, .12, .08, [k[0] * 1.4, k[1] * 1.4, k[2] * 1.4, 1], [k[0], k[1], k[2], 1], 12, .5); }
@@ -2819,6 +3117,10 @@ class Game {
   buyPick() {
     const S = this.S; if (!this.eco.buyPick()) { this.snd.play('deny'); return false; }
     this.snd.play('milestone'); this.snd.play('upgrade'); this.ui.toast('up', PICKS[S.pick][0], `×${String(PICKS[S.pick][1]).replace('.', ',')} sur chaque coup`); this.save(); return true;
+  }
+  buyPet() {
+    const S = this.S; if (!this.eco.buyPet()) { this.snd.play('deny'); return false; }
+    this.petPos = null; this.snd.play('relic'); this.snd.play('milestone'); this.ui.toast('star', PETS[S.pet][0], `×${String(PETS[S.pet][1]).replace('.', ',')} sur tous les gains · il te suit partout`); this.save(); return true;
   }
   buyAura() {
     const S = this.S; if (!this.eco.buyAura()) { this.snd.play('deny'); return false; }
@@ -2857,7 +3159,7 @@ class Game {
     this.ui.hideScreen(); this.eco.renaissance();
     const old = Object.keys(this.A).map(Number); old.forEach(e => this.disposeEra(e)); Object.values(this.M).forEach(b => { b.mesh.dispose(); b.parts.forEach(p => p.mesh.dispose()); }); this.M = {};
     this.loadEra(0); this.env = envOf(0); this.ui.setEra(0); this.snd.setEra(0); this.P.p = SPAWN.slice(); this.P.v = [0, 0, 0]; this.P.yaw = 0; this.P.pitch = -.08; this.R.flash = 1;
-    this.rocketY = 0; this.save();
+    this.rocketY = 0; this.petPos = null; this.ev = null; this.coins = []; this.save(); this.lbPush(true);
     this.mode = 'play'; this.ui.hud(true); this.ui.cine(false); this.snd.duck(1); this.lockPointer();
     this.ui.card(true, 'Monde ' + (this.S.ren + 1), WORLD_NAMES[THEME], `${ERAS[0].name} · Argent ×${fmt(this.eco.renMult())}`); setTimeout(() => this.ui.card(false), 4200);
   }
@@ -2868,7 +3170,7 @@ class Game {
   shot(p, tg, fov) { this.mode = 'shot'; const d = [tg[0] - p[0], tg[1] - p[1], tg[2] - p[2]]; this.cam = { p, yaw: Math.atan2(-d[0], -d[2]), pitch: Math.atan2(d[1], Math.hypot(d[0], d[2])), roll: 0, fov: fov || 60 }; this.ui.hud(false); this.ui.hideScreen(); }
   // ---------- helpers ----------
   grav() { return THEME === 1 ? PLANETS[this.S.era].grav : 22; }
-  relicCount() { let c = 0; for (const k in this.S.relics) if ((k[0] === 's') === (THEME === 1)) c++; return c; }
+  relicCount() { const pre = ['', 's', 'c'][THEME]; let c = 0; for (const k in this.S.relics) if (pre ? k[0] === pre : /^\d/.test(k)) c++; return c; }
   camFwd() { const c = this.cam; return [-Math.sin(c.yaw) * Math.cos(c.pitch), Math.sin(c.pitch), -Math.cos(c.yaw) * Math.cos(c.pitch)]; }
   proj(x, y, z) { const r = this.R.project(x, y, z); if (!r.vis) return null; return [r.x * innerWidth, r.y * innerHeight, r.z]; }
   bMatrix(i) { const p = SLOT_POS[i]; return TRS(p[0], 0, p[2], -SLOT_ANG[i]); }
@@ -2926,6 +3228,7 @@ class Game {
       eco.tick(dt); S.st.time += dt;
       const q = eco.checkQuest(); if (q) { this.snd.play('quest'); this.ui.toast('star', 'Objectif accompli', `${q.q.d} · +${fmt(q.r)}`); this.ui.questDone(); this.ui.bump(); }
       this.saveT += dt; if (this.saveT > 5) { this.saveT = 0; this.save(); }
+      if (m === 'play') { this.lbT -= dt; if (this.lbT <= 0) { this.lbT = 30; this.lbPush(); } }
     }
     if (m === 'title') this.updTitle(dt);
     if (m === 'enter') this.updEnter(dt);
@@ -2988,6 +3291,7 @@ class Game {
     // node aim
     const f = this.camFwd(), np = [NODE_POS[0], .9, NODE_POS[2]], dn = [np[0] - this.cam.p[0], np[1] - this.cam.p[1], np[2] - this.cam.p[2]], dl = Math.hypot(...dn);
     const dot = (f[0] * dn[0] + f[1] * dn[1] + f[2] * dn[2]) / dl; this.aimNode = Math.hypot(P.p[0] - NODE_POS[0], P.p[2] - NODE_POS[2]) < 3.9 && dot > Math.cos(Math.atan(1.6 / dl) + .22);
+    this.updEvents(dt); if (this.aimMet) this.aimNode = false;
     this.ringT += dt / 1.05; if (this.ringT > 1) this.ringT -= 1;
     if (this.time - this.lastHit > 2.6 && eco.combo > 0) eco.combo = 0;
     this.swingCD = Math.max(0, this.swingCD - dt);
@@ -2999,7 +3303,7 @@ class Game {
       if (S.lv[i] <= 0 || this.slot[i].t < 1.6) continue; const B = this.A[S.era].b[i], p = SLOT_POS[i];
       const d = [p[0] - this.cam.p[0], Math.min(B.h, 4) * .45 - this.cam.p[1], p[2] - this.cam.p[2]], L2 = Math.hypot(...d); if (L2 > 11 + B.r) continue;
       const c = (f[0] * d[0] + f[1] * d[1] + f[2] * d[2]) / L2, lim = Math.cos(Math.atan((B.r + .4) / L2) + .05);
-      if (c > lim && c > best && !this.aimNode) { best = c; this.look = { i, B }; }
+      if (c > lim && c > best && !this.aimNode && !this.aimMet) { best = c; this.look = { i, B }; }
     }
     if (this.look) {
       this.upRep += dt; if (I.actHeld || this.keys.KeyE) { if (this.upRep > .32) { this.upRep = .25; this.doUpgrade(false); } } else this.upRep = 0;
@@ -3049,7 +3353,7 @@ class Game {
         pr = `${tch ? '' : '<span class="key">E</span>'}<div>Améliorer ${nm} <span style="color:var(--dim)">niv. ${L} → ${L + 1}</span><span class="sub">+${fmt(gain)} /s${ms ? ' · <b style="color:var(--gold)">PALIER ×2</b>' : ''}</span></div><span class="c ${ok ? 'ok' : 'no'}">${fmt(c)}</span>`; act = 'Améliorer'; }
     } else if (this.aimNode && S.st.hits < 3) pr = `${tch ? '' : '<span class="key">Clic</span>'}<div>Frapper : ${ERAS[S.era].node}</div>`;
     ui.prompt(pr); ui.act2(act);
-    ui.ring(this.aimNode, this.ringR(), this.ringWin()); ui.combo(eco.combo, eco.frenzy > 0 ? eco.frenzy : 0);
+    ui.ring(this.aimNode || this.aimMet, this.ringR(), this.ringWin()); ui.combo(eco.combo, eco.frenzy > 0 ? eco.frenzy : 0);
   }
   updCine(dt) {
     const C = this.cine, S = this.S, e = C.e; C.t += dt; const t = C.t;
@@ -3066,10 +3370,10 @@ class Game {
       if (t >= 3.7 && !C.sw) { C.sw = 1; this.snd.play('era'); this.ringBurst(mp, M.r + 1); this.ui.card(true, `Monument achevé`, ERAS[e].mon, ERAS[e].monDesc); }
       if (t >= 6.2 && !C.fl) { C.fl = 1; this.R.flash = 1.4; this.ui.card(false); }
       if (t >= 6.6 && !C.swap) { C.swap = 1; if (C.kind === 'gate') { this.mode = 'reborn'; this.ui.cine(false); this.ui.card(false); this.ui.showScreen('renaissance'); this.snd.play('era'); return; } this.swapEra(); }
-      if (t >= 7.2 && !C.c2) { C.c2 = 1; const n = ERAS[S.era]; this.ui.card(true, `${THEME ? 'Planète' : 'Ère'} ${n.roman}`, n.name, n.sub); }
+      if (t >= 7.2 && !C.c2) { C.c2 = 1; const n = ERAS[S.era]; this.ui.card(true, `${ERA_WORD[THEME]} ${n.roman}`, n.name, n.sub); }
       if (t > 7.2 && t < 11) { const k = easeInOut((t - 7.2) / 3.8), a = .9 - k * .9; cam = look([Math.sin(a) * 30, 22 - k * 6, Math.cos(a) * 30], [0, 1, -2]); }
       if (t >= 11) { const k = easeInOut((t - 11) / 1.6), P = this.P; const to = { p: [P.p[0], 1.65, P.p[2]], yaw: P.yaw, pitch: P.pitch }; const fr = look([0, 16, 30], [0, 1, -2]); cam = { p: v3.lerp(fr.p, to.p, k), yaw: fr.yaw + angDiff(fr.yaw, to.yaw) * k, pitch: lerp(fr.pitch, to.pitch, k) }; if (!C.c3) { C.c3 = 1; this.ui.card(false); } }
-      if (t >= 12.6) { this.cine = null; this.mode = 'play'; this.ui.hud(true); this.ui.cine(false); this.snd.duck(1); this.lockPointer(); this.ui.toast('crown', THEME ? `Bienvenue sur ${ERAS[S.era].name}` : `Bienvenue dans l'ère ${ERAS[S.era].roman}`, THEME ? `Gravité ${Math.round(ERAS[S.era].grav / 22 * 100)} % · saute plus haut !` : 'Bâtis ton nouvel empire'); this.tempHint = 'Une nouvelle ère commence : frappe le nouveau gisement et construis !'; this.tempHintT = 6; }
+      if (t >= 12.6) { this.cine = null; this.mode = 'play'; this.ui.hud(true); this.ui.cine(false); this.snd.duck(1); this.lockPointer(); this.ui.toast('crown', THEME === 2 ? `Bienvenue : ${ERAS[S.era].name}` : THEME ? `Bienvenue sur ${ERAS[S.era].name}` : `Bienvenue dans l'ère ${ERAS[S.era].roman}`, THEME === 1 ? `Gravité ${Math.round(ERAS[S.era].grav / 22 * 100)} % · saute plus haut !` : 'Bâtis ton nouvel empire'); this.tempHint = 'Une nouvelle ère commence : frappe le nouveau gisement et construis !'; this.tempHintT = 6; }
       this.setCam(cam, 60);
     } else {
       // rocket finale
@@ -3093,7 +3397,7 @@ class Game {
   setCam(c, fov) { this.cam.p = c.p; this.cam.yaw = c.yaw; this.cam.pitch = c.pitch; this.cam.roll = 0; this.cam.fov = lerp(this.cam.fov, fov, .1); if (this.shake && this.set.shake) { this.cam.yaw += (Math.random() - .5) * this.shake; this.cam.pitch += (Math.random() - .5) * this.shake; } this.shake *= .9; }
   swapEra() {
     const S = this.S, old = S.era; this.eco.advanceEra(); this.disposeEra(old); this.loadEra(S.era);
-    this.env = envOf(S.era); this.ui.setEra(S.era); this.snd.setEra(S.era); this.P.p = SPAWN.slice(); this.P.v = [0, 0, 0]; this.P.yaw = 0; this.P.pitch = -.08; this.pA.clear(); this.pB.clear(); this.save();
+    this.env = envOf(S.era); this.ui.setEra(S.era); this.snd.setEra(S.era); this.P.p = SPAWN.slice(); this.P.v = [0, 0, 0]; this.P.yaw = 0; this.P.pitch = -.08; this.pA.clear(); this.pB.clear(); this.ev = null; this.coins = []; this.petPos = null; this.save();
   }
   // ---------- world sim ----------
   updWorld(dt) {
@@ -3126,6 +3430,7 @@ class Game {
       if (this.mode === 'play') for (let i = 0; i < 2 + S.aura; i++) if (Math.random() < dt * 9) { const a2 = Math.random() * TAU, r2 = .7 + Math.random() * .8; this.pA.emit(this.P.p[0] + Math.cos(a2) * r2, this.P.p[1] + Math.random() * .4, this.P.p[2] + Math.sin(a2) * r2, -Math.sin(a2) * .6, .8 + Math.random() * 1.2, Math.cos(a2) * .6, 1.2, .1, .02, [ac[0] * 3 * k, ac[1] * 3 * k, ac[2] * 3 * k, 1], [ac[0] * k, ac[1] * k, ac[2] * k, 1], -.3, .5); }
       this.R.auraC = ac; this.R.auraK = .18 + S.aura * .03;
     } else this.R.auraK = 0;
+    this.updPet(dt); this.updCity(dt);
     this.pA.update(dt); this.pB.update(dt);
   }
   emitFx(f, m, dt) {
@@ -3200,10 +3505,12 @@ class Game {
       const sp = this.proj(pd.p[0], 3.0, pd.p[2]);
       if (sp) { const nmB = pd.kind === 'm' ? ERAS[S.era].mon : ERAS[S.era].b[pd.i][0]; const g = pd.kind === 'm' ? 'Monument · ouvre l\'ère suivante' : `+${fmt(bInc(S.era, pd.i, 1) * this.eco.mult())} /s`; ui.label('pad', sp[0], sp[1], `<div class="n">${nmB}</div><div class="c ${ok ? 'ok' : 'no'}">${fmt(pd.cost)}</div><div class="g">${g}</div>`, pd.kind === 'm' ? 'mon' : '', clamp(1.4 - sp[2] / 40, .35, 1)); }
     }
+    this.drawEvents();
     ui.endLabels();
     // relics
     if (S.aura > 0 && this.mode === 'play') { const ac = lin(AURAS[S.aura][4]); const am = TRS(this.P.p[0], this.P.p[1] + .04, this.P.p[2], this.time * 1.5, [.75, 1, .75]); R.add(this.ringMesh, am, { tint: [ac[0] * 2.5, ac[1] * 2.5, ac[2] * 2.5], noShadow: true }); const am2 = TRS(this.P.p[0], this.P.p[1] + .05, this.P.p[2], -this.time, [.5, 1, .5]); R.add(this.ringMesh, am2, { tint: [ac[0] * 2, ac[1] * 2, ac[2] * 2], noShadow: true }); }
     for (let k = 0; k < 3; k++) { if (S.relics[relicKey(THEME, S.era, k)]) continue; const rp = RELIC_SPOTS[S.era][k]; R.add(a.relic, TRS(rp[0], 1.1 + Math.sin(t * 2 + k) * .12, rp[2], t * 1.2, 1.6), { flash: .1 + Math.sin(t * 5) * .08 }); }
+    this.drawPet(); this.drawCity();
     // first person
     if (this.mode === 'play') this.drawFP(a, dt);
     R.render(env, [this.pB, this.pA]);
@@ -3211,6 +3518,8 @@ class Game {
   partMatrix(m, p, ang, t) {
     const pm = M4.copy(M4.ident(), m); M4.translate(pm, p.at[0], p.at[1], p.at[2]); if (p.ry) M4.rotY(pm, p.ry);
     if (p.mode === 'flag') M4.rotY(pm, Math.sin(t * 1.3 + p.at[0]) * .25);
+    else if (p.mode === 'hover') { M4.translate(pm, 0, Math.sin(t * 1.5 + p.at[0]) * .25, 0); M4.rotY(pm, t * .3); }
+    else if (p.mode === 'climb') { M4.translate(pm, 0, (t * 5 + p.at[0]) % 52, 0); }
     else if (p.mode === 'robot') { M4.rotY(pm, Math.sin(t * 1.4 + p.at[0]) * 1.2); }
     else if (p.mode === 'spin') { if (p.ax === 'x') M4.rotX(pm, ang); else if (p.ax === 'y') M4.rotY(pm, ang); else M4.rotZ(pm, ang); }
     return pm;
@@ -3252,6 +3561,161 @@ class Game {
 // ---------- boot ----------
 window.addEventListener('load', () => {
   const g = new Game(); window.ERES = { g, ECO, bCost, fmt, setWorld, eras: () => ERAS };
+});
+
+// ===================== FEATURES: pets, events, daily, leaderboard, city =====================
+const FIREBASE = { apiKey: "AIzaSyDSZQGQ6HYzKEJ2dT3GtoG0qRcy_HZ76TE", projectId: "strike-8db1f" };
+function buildPet(gl, k) {
+  const P = {}, c = PETS[k][4];
+  let b = nb(6000 + k, 0); b.jit = .04;
+  if (k === 1 || k === 3) { // fox / wolf
+    const body = k === 1 ? 0xd8662a : 0x7a8aa8, belly = k === 1 ? 0xf2e6d8 : 0xc8d4e8, e = k === 3 ? .5 : 0;
+    b.c(body).E(e * .3).push().t(0, .32, 0).s(1, .9, 1.6).sph(.17, 1).pop(); b.c(belly).push().t(0, .26, .05).s(.8, .6, 1.3).sph(.15, 1).pop();
+    b.c(body).push().t(0, .46, .27).sph(.13, 1).pop(); b.c(belly).push().t(0, .42, .4).s(.7, .6, 1.2).sph(.07, 1).pop(); b.c(0x111111).push().t(0, .44, .47).sph(.025, 0).pop();
+    b.c(body).push().t(-.07, .57, .25).cone(.045, .12, 4).pop().push().t(.07, .57, .25).cone(.045, .12, 4).pop();
+    b.c(k === 3 ? 0x5ad0ff : 0x1a1a1a).E(k === 3 ? 3 : 0).push().t(-.05, .49, .37).sph(.02, 0).pop().push().t(.05, .49, .37).sph(.02, 0).pop().E(0);
+    b.c(body); [[-.08, .15], [.08, .15], [-.08, -.15], [.08, -.15]].forEach(p => b.push().t(p[0], 0, p[1]).cyl(.035, .03, .25, 5).pop());
+    b.c(body).push().t(0, .36, -.3).rx(-.9).cyl(.07, .03, .32, 6).pop(); b.c(k === 3 ? 0x9fe8ff : 0xf2f2f2).E(k === 3 ? 2 : 0).push().t(0, .54, -.48).sph(.045, 0).pop().E(0);
+    P.fly = false;
+  } else if (k === 2) { // owl
+    b.c(0xeef2f8).push().s(1, 1.15, .95).sph(.2, 1).pop(); b.c(0xd8dee8).push().t(0, .22, 0).sph(.15, 1).pop();
+    b.c(0xffb020).E(.8).push().t(-.06, .25, .12).sph(.04, 0).pop().push().t(.06, .25, .12).sph(.04, 0).pop().E(0); b.c(0x111111).push().t(-.06, .25, .155).sph(.018, 0).pop().push().t(.06, .25, .155).sph(.018, 0).pop();
+    b.c(0x8a6a3a).push().t(0, .19, .15).rx(HP).cone(.02, .05, 4).pop(); b.c(0xc8d0dc).push().t(-.09, .34, 0).cone(.03, .08, 4).pop().push().t(.09, .34, 0).cone(.03, .08, 4).pop();
+    P.fly = true; const w = nb(6100 + k, 0); w.c(0xd8dee8).push().t(.18, 0, 0).s(1.6, .3, 1).sph(.12, 1).pop(); P.wing = w.build(gl);
+  } else if (k === 4) { // dragon
+    b.c(0xc8302a).push().s(1, .9, 1.5).sph(.17, 1).pop(); b.c(0xf0a050).push().t(0, -.05, .05).s(.7, .6, 1.2).sph(.13, 1).pop();
+    b.c(0xc8302a).push().t(0, .12, .18).rx(-.6).cyl(.07, .05, .25, 6).pop().push().t(0, .3, .33).s(1, .85, 1.3).sph(.09, 1).pop();
+    b.c(0xffe080).E(3).push().t(-.045, .34, .42).sph(.018, 0).pop().push().t(.045, .34, .42).sph(.018, 0).pop().E(0);
+    b.c(0xe8d8b0).push().t(-.05, .38, .3).rx(-.8).cone(.02, .1, 4).pop().push().t(.05, .38, .3).rx(-.8).cone(.02, .1, 4).pop();
+    b.c(0xc8302a).push().t(0, 0, -.22).rx(-HP - .3).cyl(.06, .015, .45, 6).pop();
+    P.fly = true; const w = nb(6100 + k, 0); w.c(0x8a1a1a).push().t(.2, 0, 0).tbox(.4, .02, .3, .4, .05).pop(); w.c(0xc8302a).push().t(0, 0, .12).rz(-HP).cyl(.015, .01, .4, 4).pop(); P.wing = w.build(gl);
+  } else if (k === 5) { // phoenix
+    b.c(0xffc23a).E(1.2).push().s(1, .9, 1.4).sph(.15, 1).pop(); b.c(0xff7a2a).E(1.4).push().t(0, .16, .15).sph(.09, 1).pop();
+    b.c(0xffffff).E(3).push().t(-.04, .19, .22).sph(.015, 0).pop().push().t(.04, .19, .22).sph(.015, 0).pop();
+    b.c(0xffe080).E(2).push().t(0, .12, .25).rx(HP).cone(.02, .06, 4).pop(); b.c(0xff4a1a).E(2); for (let i = 0; i < 3; i++) b.push().t((i - 1) * .04, .24, .12).rx(-.4).cone(.02, .12, 4).pop();
+    for (let i = 0; i < 3; i++) b.push().t((i - 1) * .06, 0, -.15).rx(-HP + .3 + (i - 1) * .1).tbox(.06, .5, .02, .02, .01).pop(); b.E(0);
+    P.fly = true; const w = nb(6100 + k, 0); w.c(0xff9a2a).E(1.6).push().t(.22, 0, 0).tbox(.44, .02, .26, .44, .06).pop().E(0); P.wing = w.build(gl);
+  }
+  P.body = b.build(gl); P.col = c; return P;
+}
+// leaderboard (Firestore REST)
+function lbReady() { return !!(FIREBASE.apiKey && FIREBASE.projectId); }
+function lbURL(path) { return `https://firestore.googleapis.com/v1/projects/${FIREBASE.projectId}/databases/(default)/documents/${path}?key=${FIREBASE.apiKey}`; }
+
+Object.assign(Game.prototype, {
+  initFeatures() {
+    const gl = this.gl; this.pets = PETS.map((_, k) => k ? buildPet(gl, k) : null); this.cars = buildCars(gl);
+    const cb = nb(6200, 0); cb.c(PAL.gold).E(.8).SP(1).push().rx(HP).t(0, -.02, 0).cyl(.22, .22, .04, 14).pop(); cb.c(0xffe9a0).E(1.2).push().rx(HP).t(0, .021, 0).cyl(.14, .14, .005, 10).pop(); this.coinMesh = cb.build(gl);
+    const mb = nb(6201, 0); mb.c(0xd8a030).E(.6).SP(1).rock(1.1, 1, .35); mb.c(0xffe080).E(2.4); for (let i = 0; i < 8; i++) { const a = i * 2.39; mb.push().t(Math.cos(a) * .8, .2 + (i % 3) * .3, Math.sin(a) * .7).ry(a).rx(.5).s(.5, 1.4, .5).sph(.18, 0).pop(); } mb.E(0).SP(0); this.metMesh = mb.build(gl);
+    this.petPos = null; this.ev = null; this.evT = 100 + Math.random() * 80; this.coins = []; this.lbT = 5; this.lbData = null; this.lbErr = '';
+    const r = RNG(77); this.carLanes = []; for (let i = 0; i < 18; i++) this.carLanes.push({ r: 46 + r() * 50, h: 14 + r() * 26, spd: (6 + r() * 10) * (r() < .5 ? -1 : 1), ph: r() * TAU, m: i % 3 });
+  },
+  // ---------- pets ----------
+  updPet(dt) {
+    const S = this.S; if (!S.pet || this.mode === 'title') { this.petPos = null; return; }
+    const P = this.P, sy = Math.sin(P.yaw), cy = Math.cos(P.yaw), pet = this.pets[S.pet];
+    const tx = P.p[0] - cy * 1.25 - sy * 1.5, tz = P.p[2] + sy * 1.25 - cy * 1.5, ty = P.p[1] + (pet.fly ? 1.15 + Math.sin(this.time * 2.2) * .12 : 0);
+    if (!this.petPos) this.petPos = { p: [tx, ty, tz], yaw: P.yaw, ph: 0 };
+    const pp = this.petPos, dx = tx - pp.p[0], dz = tz - pp.p[2], d = Math.hypot(dx, dz), k = Math.min(1, dt * (d > 4 ? 8 : 4));
+    pp.p[0] += dx * k; pp.p[2] += dz * k; pp.p[1] += (ty - pp.p[1]) * Math.min(1, dt * 6);
+    const sp = d * 4; pp.ph += dt * (pet.fly ? 14 : 4 + sp * 3); if (d > .15) pp.yaw += angDiff(pp.yaw, Math.atan2(dx, dz)) * Math.min(1, dt * 6); else pp.yaw += angDiff(pp.yaw, P.yaw + PI) * Math.min(1, dt * 2) * 0;
+    if (Math.random() < dt * (S.pet >= 3 ? 10 : 4)) { const c = lin(pet.col); this.pA.emit(pp.p[0] + (Math.random() - .5) * .3, pp.p[1] + .3, pp.p[2] + (Math.random() - .5) * .3, 0, .3, 0, .9, .07, .01, [c[0] * 3, c[1] * 3, c[2] * 3, 1], [c[0], c[1], c[2], 1], -.2, .5); }
+  },
+  drawPet() {
+    const S = this.S, pp = this.petPos; if (!S.pet || !pp || this.mode === 'title') return; const pet = this.pets[S.pet], R = this.R;
+    const bob = pet.fly ? 0 : Math.abs(Math.sin(pp.ph)) * .04, m = TRS(pp.p[0], pp.p[1] + bob, pp.p[2], -pp.yaw + PI, .95);
+    M4.rotY(m, PI); R.add(pet.body, m);
+    if (pet.wing) [-1, 1].forEach(s => { const w = M4.copy(M4.ident(), m); M4.translate(w, s * .1, .05, 0); M4.scale(w, s, 1, 1); M4.rotZ(w, Math.sin(pp.ph) * .7 * s * 0 + Math.sin(pp.ph) * .7); R.add(pet.wing, w, { noShadow: true }); });
+  },
+  // ---------- events ----------
+  updEvents(dt) {
+    const S = this.S; if (this.mode !== 'play') return;
+    if (!this.ev && S.tut >= 4) { this.evT -= dt; if (this.evT <= 0) this.startEvent(Math.random() < .55 ? 'met' : 'rain'); }
+    const ev = this.ev; this.aimMet = false;
+    if (ev && ev.k === 'met') {
+      ev.t += dt; const f = clamp(ev.t / 1.8, 0, 1);
+      ev.pos = [lerp(ev.to[0] + 30, ev.to[0], f), lerp(60, 0, f * f), lerp(ev.to[2] - 20, ev.to[2], f)];
+      if (f < 1) { for (let i = 0; i < 4; i++) this.pA.emit(ev.pos[0], ev.pos[1], ev.pos[2], (Math.random() - .5) * 2, (Math.random() - .5) * 2, (Math.random() - .5) * 2, .6, .9, .1, [5, 3, 1, 1], [2, .5, .1, 1], 0, 1); }
+      else if (!ev.landed) { ev.landed = 1; this.shake = Math.max(this.shake, .12); this.snd.play('hit', 0); this.snd.play('land'); this.ringBurst(ev.to, 2); for (let i = 0; i < 40; i++) { const a = Math.random() * TAU; this.pB.emit(ev.to[0], .3, ev.to[2], Math.cos(a) * 4, 1 + Math.random() * 2, Math.sin(a) * 4, 1.5, .5, 1.8, [.6, .5, .35, .5], [.6, .5, .35, 0], 2, 1.5); } }
+      if (ev.landed) {
+        ev.life -= dt; if (Math.random() < dt * 14) this.pA.emit(ev.to[0] + (Math.random() - .5) * 2, .5 + Math.random() * 2, ev.to[2] + (Math.random() - .5) * 2, 0, 1, 0, 1, .16, .02, [4, 3.2, 1.2, 1], [2, 1.2, .2, 1], -.2, .5);
+        const c = this.cam, fw = this.camFwd(), dx = ev.to[0] - c.p[0], dy = .9 - c.p[1], dz = ev.to[2] - c.p[2], dl = Math.hypot(dx, dy, dz);
+        this.aimMet = Math.hypot(this.P.p[0] - ev.to[0], this.P.p[2] - ev.to[2]) < 4 && (fw[0] * dx + fw[1] * dy + fw[2] * dz) / dl > Math.cos(Math.atan(1.6 / dl) + .22);
+        if (ev.life <= 0) { this.ev = null; this.evT = 120 + Math.random() * 120; this.ui.toast('gem', 'La météorite s\'est désintégrée', ''); }
+      }
+    }
+    if (ev && ev.k === 'rain') {
+      ev.t += dt; ev.life -= dt;
+      if (ev.t < 12 && Math.random() < dt * 4) { for (let tries = 0; tries < 6; tries++) { const a = Math.random() * TAU, r = 2.5 + Math.random() * 12, x = this.P.p[0] + Math.cos(a) * r, z = this.P.p[2] + Math.sin(a) * r; if (Math.hypot(x, z) < 31 && this.colliders().every(c => Math.hypot(x - c[0], z - c[1]) > c[2] + .3)) { this.coins.push({ p: [x, 12 + Math.random() * 6, z], vy: 0, t: 0 }); break; } } }
+      for (let i = this.coins.length - 1; i >= 0; i--) {
+        const c = this.coins[i]; c.t += dt; if (c.p[1] > .25) { c.vy -= 14 * dt; c.p[1] = Math.max(.25, c.p[1] + c.vy * dt); if (c.p[1] <= .25) this.pA.emit(c.p[0], .3, c.p[2], 0, 1.5, 0, .4, .3, .05, [4, 3, 1, 1], [2, 1, .2, 1], 4, 1); }
+        const dx = this.P.p[0] - c.p[0], dz = this.P.p[2] - c.p[2], d = Math.hypot(dx, dz);
+        if (d < 3 && c.p[1] <= .3) { c.p[0] += dx / d * dt * 9; c.p[2] += dz / d * dt * 9; }
+        if (d < 1.1 && c.p[1] < 1.5) { this.coins.splice(i, 1); const v = Math.max(this.eco.ips(true) * 4, bCost(S.era, 1) * this.eco.mult() * .3); this.eco.earn(v); this.snd.play('coin'); const s = this.proj(c.p[0], 1.4, c.p[2]); if (s) this.ui.pop(s[0], s[1], '+' + fmt(v), ''); }
+      }
+      if (ev.life <= 0) { this.ev = null; this.coins = []; this.evT = 120 + Math.random() * 120; }
+    }
+  },
+  startEvent(k) {
+    if (k === 'met') {
+      let to = null; for (let tries = 0; tries < 40 && !to; tries++) { const a = Math.random() * TAU, r = 7 + Math.random() * 18, x = Math.sin(a) * r, z = -Math.cos(a) * r; if (this.colliders().every(c => Math.hypot(x - c[0], z - c[1]) > c[2] + 2) && PAD_POS.every(p => Math.hypot(x - p[0], z - p[2]) > 2.5)) to = [x, 0, z]; }
+      if (!to) { this.evT = 30; return; }
+      this.ev = { k: 'met', t: 0, life: 30, to, hits: 0, pos: [to[0], 60, to[2]] }; this.snd.play('frenzy'); this.ui.toast('bolt', 'Une météorite dorée tombe !', 'Va la frapper avant qu\'elle disparaisse');
+    } else { this.ev = { k: 'rain', t: 0, life: 22 }; this.coins = []; this.snd.play('relic'); this.ui.toast('star', 'Pluie d\'or !', 'Ramasse les pièces qui tombent autour de toi'); }
+  },
+  meteorHit(perfect) {
+    const ev = this.ev; if (!ev || ev.k !== 'met' || !ev.landed) return; ev.hits++;
+    const last = ev.hits >= 6, v = Math.max(this.eco.ips(true) * 15, this.eco.hitValue(perfect) * 6) * (last ? 3 : 1);
+    this.eco.earn(v); this.snd.play('hit', 3); this.snd.play('perfect', 6); this.shake = Math.max(this.shake, .08); this.ui.bump();
+    const s = this.proj(ev.to[0], 1.6, ev.to[2]); if (s) this.ui.pop(s[0], s[1], `+${fmt(v)}<small>MÉTÉORITE ${ev.hits}/6</small>`, 'p');
+    for (let i = 0; i < 26; i++) this.pA.emit(ev.to[0], 1, ev.to[2], (Math.random() - .5) * 6, Math.random() * 5, (Math.random() - .5) * 6, .7, .14, .02, [5, 3.6, 1.2, 1], [2, 1, .2, 1], 8, 1);
+    if (last) { this.ringBurst(ev.to, 2.5); this.ui.toast('gem', 'Météorite pulvérisée !', `Bonus final ×3`); this.ev = null; this.evT = 120 + Math.random() * 120; }
+  },
+  drawEvents() {
+    const R = this.R, ev = this.ev, t = this.time;
+    if (ev && ev.k === 'met') {
+      const sq = ev.landed ? 1 + Math.sin(t * 5) * .03 : 1, p = ev.landed ? ev.to : ev.pos;
+      R.add(this.metMesh, TRS(p[0], p[1] + (ev.landed ? .2 : 0), p[2], t * (ev.landed ? .2 : 3), sq), { flash: ev.landed ? .12 + Math.sin(t * 6) * .08 : .3 });
+      R.lights.push({ x: p[0], y: p[1] + 1.5, z: p[2], r: 9, c: linS(0xffc04a, 3) });
+      if (ev.landed && this.mode === 'play') { const s = this.proj(p[0], 2.6, p[2]); if (s) this.ui.label('met', s[0], s[1], `<div class="n">Météorite dorée</div><div class="g">${6 - ev.hits} coups · ${Math.ceil(ev.life)} s</div>`, 'mon', 1); }
+    }
+    if (this.coins.length) for (const c of this.coins) R.add(this.coinMesh, TRS(c.p[0], c.p[1], c.p[2], t * 3 + c.t, 1.2), { noShadow: true, flash: .15 });
+  },
+  // ---------- city (theme 2) ----------
+  updCity(dt) {
+    if (THEME !== 2 || !this.env) return; const rain = this.env.rain || 0; if (!rain || this.mode === 'pause') return; const c = this.cam.p;
+    const n = 260 * rain * dt * (this.R.quality ? 1 : .5); let k = Math.floor(n) + (Math.random() < n % 1 ? 1 : 0);
+    while (k--) { const a = Math.random() * TAU, r = Math.sqrt(Math.random()) * 16; this.pB.emit(c[0] + Math.cos(a) * r, c[1] + 7 + Math.random() * 3, c[2] + Math.sin(a) * r, 1.2, -19, .4, .55, .045, .03, [.7, .75, .95, .55], [.7, .75, .95, .4], 0, 0); }
+    if (Math.random() < dt * 30 * rain) { const a = Math.random() * TAU, r = 1 + Math.random() * 10; this.pA.emit(c[0] + Math.cos(a) * r, .05, c[2] + Math.sin(a) * r, 0, .8, 0, .25, .08, .02, [1, 1.1, 1.4, .7], [1, 1, 1.2, 0], 5, 1); }
+  },
+  drawCity() {
+    if (THEME !== 2) return; const R = this.R, t = this.time;
+    for (const L of this.carLanes) { const a = L.ph + t * L.spd / L.r, x = Math.sin(a) * L.r, z = -Math.cos(a) * L.r, yaw = -a + (L.spd > 0 ? -HP : HP); R.add(this.cars[L.m], TRS(x, L.h + Math.sin(t + L.ph) * .4, z, yaw + PI, 1.3), { noShadow: true }); }
+  },
+  // ---------- daily ----------
+  todayStr(o) { const d = new Date(Date.now() + (o || 0) * 864e5); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); },
+  dailyPending() { const D = this.S.daily || (this.S.daily = { last: '', streak: 0 }); return D.last !== this.todayStr(); },
+  dailyInfo() { const D = this.S.daily, streak = D.last === this.todayStr(-1) ? D.streak + 1 : 1; const day = (streak - 1) % 7; return { streak, day }; },
+  dailyReward(day) { const base = Math.max(this.eco.ips(true) * 90, bCost(this.S.era, 2) * this.eco.mult() * .5); return base * [1, 1.5, 2, 3, 4, 6, 10][day]; },
+  claimDaily() {
+    const S = this.S, inf = this.dailyInfo(), v = this.dailyReward(inf.day); this.eco.earn(v); S.daily = { last: this.todayStr(), streak: inf.streak };
+    this.snd.play('quest'); this.ui.toast('star', `Récompense du jour ${inf.day + 1}`, `+${fmt(v)} or${inf.day === 6 ? ' · frénésie offerte !' : ''}`); if (inf.day === 6) this.eco.frenzy = 20; this.save(); this.lbPush(true);
+  },
+  // ---------- leaderboard ----------
+  lbPush(force) {
+    if (!lbReady() || !this.auth || !this.S.started) return; if (!force && this.lbBusy) return; this.lbBusy = true; const S = this.S;
+    const body = { fields: { pseudo: { stringValue: (this.pseudo || this.auth.id).slice(0, 16) }, ren: { integerValue: String(S.ren) }, money: { doubleValue: isFinite(S.money) ? S.money : 0 }, world: { integerValue: String(S.ren + 1) }, updated: { integerValue: String(Date.now()) } } };
+    try { fetch(lbURL('leaderboard/' + this.auth.id), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(() => { this.lbBusy = false; }, () => { this.lbBusy = false; }); } catch (e) { this.lbBusy = false; }
+  },
+  lbFetch() {
+    this.lbData = null; this.lbErr = '';
+    if (!lbReady()) { this.lbErr = 'Le classement n\'est pas encore activé.'; return Promise.resolve(); }
+    this.lbPush(true);
+    return fetch(lbURL('leaderboard')).then(r => r.json()).then(j => {
+      const L = (j.documents || []).map(d => { const f = d.fields || {}; return { id: d.name.split('/').pop(), pseudo: (f.pseudo && f.pseudo.stringValue) || '?', ren: +((f.ren && f.ren.integerValue) || 0), money: +((f.money && (f.money.doubleValue ?? f.money.integerValue)) || 0) }; });
+      L.sort((a, b) => b.ren - a.ren || b.money - a.money); this.lbData = L;
+    }).catch(() => { this.lbErr = 'Impossible de joindre le classement (connexion ou site non hébergé).'; });
+  },
 });
 
 })();
